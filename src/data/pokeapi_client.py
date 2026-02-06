@@ -8,6 +8,19 @@ class PokeAPIClient:
     BASE_URL = "https://pokeapi.co/api/v2"
     CACHE_DIR = "data/cache"
     
+    POKEMON_COLORS = {
+        'black': '#4a4a4a',
+        'blue': '#4a9bd1',
+        'brown': '#9b7653',
+        'gray': '#7a7a7a',
+        'green': '#5cb85c',
+        'pink': '#f8a5c2',
+        'purple': '#765595',
+        'red': '#e74c3c',
+        'white': '#e0e0e0',
+        'yellow': '#f1c40f'
+    }
+    
     def __init__(self, use_cache=True, cache_days=30):
         self.use_cache = use_cache
         self.cache_days = cache_days
@@ -35,6 +48,14 @@ class PokeAPIClient:
         cache_path = self._get_cache_path(pokemon_name)
         with open(cache_path, 'r', encoding='utf-8') as f:
             return json.load(f)
+    
+    def _get_type_icon(self, type_url):
+        try:
+            response = requests.get(type_url, timeout=5)
+            type_data = response.json()
+            return type_data['sprites']['generation-ix']['scarlet-violet']['name_icon']
+        except:
+            return None
             
     def get_pokemon(self, pokemon_name):
         pokemon_name = pokemon_name.lower().strip()
@@ -58,11 +79,26 @@ class PokeAPIClient:
                     french_name = name_entry['name']
                     break
             
+            types_with_icons = []
+            for type_entry in data['types']:
+                type_icon = self._get_type_icon(type_entry['type']['url'])
+                types_with_icons.append({
+                    'name': type_entry['type']['name'],
+                    'slot': type_entry['slot'],
+                    'icon': type_icon
+                })
+            
+            color_name = species_data.get('color', {}).get('name', 'gray')
+            color_hex = self.POKEMON_COLORS.get(color_name, '#7a7a7a')
+            
             pokemon_data = {
                 'name': data['name'].capitalize(),
                 'french_name': french_name,
                 'id': data['id'],
-                'types': [t['type']['name'] for t in data['types']],
+                'types': [t['name'] for t in types_with_icons],
+                'types_detailed': types_with_icons,
+                'color': color_hex,
+                'color_name': color_name,
                 'stats': {
                     stat['stat']['name']: stat['base_stat'] 
                     for stat in data['stats']

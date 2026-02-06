@@ -1,10 +1,25 @@
 {
   "name": "Gengar",
+  "french_name": "Ectoplasma",
   "id": 94,
   "types": [
     "ghost",
     "poison"
   ],
+  "types_detailed": [
+    {
+      "name": "ghost",
+      "slot": 1,
+      "icon": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/8.png"
+    },
+    {
+      "name": "poison",
+      "slot": 2,
+      "icon": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/4.png"
+    }
+  ],
+  "color": "#765595",
+  "color_name": "purple",
   "stats": {
     "hp": 60,
     "attack": 65,
@@ -13,11 +28,13 @@
     "special-defense": 75,
     "speed": 110
   },
-  "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/94.png",
+  "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/94.png",
   "evs": [
     {
       "stat": "special-attack",
       "value": 3
     }
-  ]
+  ],
+  "generation": "generation-i",
+  "capture_rate": 45
 }
