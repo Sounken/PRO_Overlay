@@ -1,0 +1,25 @@
+{
+  "name": "Aggron",
+  "id": 306,
+  "types": [
+    "steel",
+    "rock"
+  ],
+  "stats": {
+    "hp": 70,
+    "attack": 110,
+    "defense": 180,
+    "special-attack": 60,
+    "special-defense": 60,
+    "speed": 50
+  },
+  "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/306.png",
+  "evs": [
+    {
+      "stat": "defense",
+      "value": 3
+    }
+  ],
+  "generation": "generation-iii",
+  "capture_rate": 45
+}

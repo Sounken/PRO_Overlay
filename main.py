@@ -3,7 +3,9 @@ import json
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import Qt
 from src.overlay.overlay_window import OverlayWindow
+from src.dashboard.dashboard_window import DashboardWindow
 from src.utils.hotkeys import HotkeyManager
+
 
 def load_config():
     try:
@@ -13,10 +15,8 @@ def load_config():
         print("Erreur: config.json introuvable")
         sys.exit(1)
 
+
 def main():
-    QApplication.setAttribute(Qt.ApplicationAttribute.AA_EnableHighDpiScaling)
-    QApplication.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps)
-    
     app = QApplication(sys.argv)
     app.setApplicationName("Pokemon PRO Helper")
     
@@ -25,14 +25,20 @@ def main():
     overlay = OverlayWindow(config)
     overlay.show()
     
+    dashboard = DashboardWindow(config)
+    dashboard.show()
+    
+    dashboard.pokemon_selected.connect(overlay.update_pokemon)
+    
     hotkey_manager = HotkeyManager(overlay, config)
     hotkey_manager.register_hotkeys()
     
-    print("Pokemon PRO Helper lancé !")
-    print(f"📌 Hotkey toggle: {config['hotkeys']['toggle_overlay'].upper()}")
-    print(f"🔄 Hotkey refresh: {config['hotkeys']['refresh_detection'].upper()}")
+    print("🎮 Pokemon PRO Helper lancé !")
+    print("📊 Dashboard ouvert")
+    print(f"📌 Hotkey toggle overlay: {config['hotkeys']['toggle_overlay'].upper()}")
     
     sys.exit(app.exec())
+
 
 if __name__ == "__main__":
     main()
