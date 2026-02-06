@@ -1,0 +1,46 @@
+{
+  // Python
+  "python.defaultInterpreterPath": "${workspaceFolder}/backend/venv/bin/python",
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": true,
+  "python.formatting.provider": "black",
+  "python.analysis.typeCheckingMode": "basic",
+
+  // TypeScript/JavaScript
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // Files
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true
+  },
+
+  // Search
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/__pycache__": true,
+    "**/venv": true
+  },
+
+  // Extensions recommandées
+  "[python]": {
+    "editor.rulers": [88],
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.rulers": [100],
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.rulers": [100],
+    "editor.formatOnSave": true
+  }
+}

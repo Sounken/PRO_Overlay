@@ -1,8 +1,0 @@
-PyQt6==6.7.0
-PyQt6-Qt6==6.7.0
-mss==9.0.1
-pytesseract==0.3.13
-Pillow==10.2.0
-requests==2.31.0
-keyboard==0.13.5
-opencv-python==4.9.0.80
