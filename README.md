@@ -17,7 +17,8 @@ Assistant overlay pour Pokemon Revolution Online avec détection OCR et recomman
 - Tesseract OCR
 
 ### Installation Tesseract
-**Windows** : Télécharger depuis https://github.com/UB-Mannheim/tesseract/wiki
+**Windows** : Télécharger depuis https://github.com/UB-Mannheim/tesseract/wiki 
+
 Ajouter au PATH : `C:\Program Files\Tesseract-OCR`
 
 **Linux** : `sudo apt install tesseract-ocr`
