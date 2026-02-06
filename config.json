@@ -1,0 +1,28 @@
+{
+  "overlay": {
+    "enabled": true,
+    "width_percent": 25,
+    "height_percent": 30,
+    "opacity": 0.95,
+    "always_on_top": true
+  },
+  "ocr": {
+    "language": "eng",
+    "confidence_threshold": 60,
+    "capture_region": {
+      "x": 0,
+      "y": 0,
+      "width": 300,
+      "height": 100
+    }
+  },
+  "hotkeys": {
+    "toggle_overlay": "f9",
+    "refresh_detection": "f10",
+    "quit": "ctrl+q"
+  },
+  "api": {
+    "cache_duration_days": 30,
+    "use_cache": true
+  }
+}

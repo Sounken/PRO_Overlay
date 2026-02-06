@@ -1,0 +1,23 @@
+{
+  "name": "Gengar",
+  "id": 94,
+  "types": [
+    "ghost",
+    "poison"
+  ],
+  "stats": {
+    "hp": 60,
+    "attack": 65,
+    "defense": 60,
+    "special-attack": 130,
+    "special-defense": 75,
+    "speed": 110
+  },
+  "sprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/94.png",
+  "evs": [
+    {
+      "stat": "special-attack",
+      "value": 3
+    }
+  ]
+}
