@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { pokemonAPI, Pokemon, OCRRegion } from '@/services/api'
 import PokemonInfo from './PokemonInfo'
-import { motion } from 'framer-motion'
 
 function OverlayWindow() {
   const [pokemon, setPokemon] = useState<Pokemon | null>(null)
@@ -55,20 +54,20 @@ function OverlayWindow() {
       const now = Date.now()
       const timeSinceLastChange = now - lastBattleStateChangeRef.current
 
-      // Détection du combat basée sur la confiance (>= 25%)
-      const inCombat = debugData.confidence >= 25
+      // Gestion du mode autoBattle: ne basculer que si on détecte un VRAI Pokémon
+      // (pas juste une confiance élevée sans résultat)
+      const pokemonDetected = debugData.detected_pokemon !== null && debugData.detected_pokemon !== ""
 
-      // Gestion du mode autoBattle: basculer l'overlay si l'état de combat a changé
       if (autoBattleRef.current && timeSinceLastChange > 500) {
-        if (inCombat && !inBattleRef.current) {
-          // Passage de "pas en combat" à "en combat" → ouvrir l'overlay
-          console.log(`[AutoBattle] Combat detected (confiance: ${debugData.confidence.toFixed(1)}%) - opening overlay`)
+        if (pokemonDetected && !inBattleRef.current) {
+          // Passage de "pas en combat" à "Pokémon détecté" → ouvrir l'overlay
+          console.log(`[AutoBattle] Pokemon detected: ${debugData.detected_pokemon} (confiance: ${debugData.confidence.toFixed(1)}%) - opening overlay`)
           inBattleRef.current = true
           lastBattleStateChangeRef.current = now
           window.electronAPI?.toggleOverlay()
-        } else if (!inCombat && inBattleRef.current) {
-          // Passage de "en combat" à "pas en combat" → fermer l'overlay
-          console.log(`[AutoBattle] Combat ended (confiance: ${debugData.confidence.toFixed(1)}%) - closing overlay`)
+        } else if (!pokemonDetected && inBattleRef.current) {
+          // Passage de "Pokémon détecté" à "pas de Pokémon" → fermer l'overlay
+          console.log(`[AutoBattle] No pokemon detected (confiance: ${debugData.confidence.toFixed(1)}%) - closing overlay`)
           inBattleRef.current = false
           lastBattleStateChangeRef.current = now
           window.electronAPI?.toggleOverlay()
@@ -76,8 +75,8 @@ function OverlayWindow() {
       }
 
       // Gestion de l'affichage du Pokémon
-      if (inCombat && debugData.detected_pokemon) {
-        // En combat et un Pokémon est détecté
+      if (pokemonDetected) {
+        // Un Pokémon est détecté
 
         // Vérifier si c'est un nouveau Pokémon
         const isPokemonChanged = debugData.detected_pokemon !== lastDetectedRef.current
@@ -100,8 +99,8 @@ function OverlayWindow() {
             lastDetectedRef.current = null
           }
         }
-      } else if (!inCombat) {
-        // Pas en combat → clear affichage
+      } else {
+        // Pas de Pokémon détecté → clear affichage
         setPokemon(null)
         setError(null)
         lastDetectedRef.current = null
@@ -143,8 +142,8 @@ function OverlayWindow() {
 
   // Drag handling
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Ne drag que si on clique sur le header
-    if ((e.target as HTMLElement).closest('.overlay-header')) {
+    // Drag sur le titre du Pokemon
+    if ((e.target as HTMLElement).closest('h1')) {
       setIsDragging(true)
       dragOffsetRef.current = {
         x: e.clientX,
@@ -195,51 +194,30 @@ function OverlayWindow() {
     <div
       ref={containerRef}
       onMouseDown={handleMouseDown}
-      className="w-full h-full glass p-4 rounded-2xl flex flex-col select-none overflow-hidden"
+      className="w-full h-full select-none overflow-hidden"
       style={{
         cursor: isDragging ? 'grabbing' : 'grab',
-        background: 'rgba(30, 30, 46, 0.8)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: '1rem',
       }}
     >
-        {/* Header - Draggable */}
-        <div className="overlay-header flex items-center justify-between mb-4 cursor-grab active:cursor-grabbing">
-          <h2 className="text-lg font-bold">PRO Overlay</h2>
-          <div className="flex items-center gap-2">
-            {loading && (
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full"
-              />
-            )}
-            <span className="text-xs text-gray-400">F9 pour toggle</span>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto pr-2">
-          {pokemon ? (
-            <PokemonInfo pokemon={pokemon} />
+      {pokemon ? (
+        <PokemonInfo pokemon={pokemon} />
+      ) : (
+        <div className="flex flex-col items-center justify-center h-64 text-center">
+          {error ? (
+            <>
+              <p className="text-4xl mb-2">❌</p>
+              <p className="text-sm text-gray-400">{error}</p>
+            </>
           ) : (
-            <div className="flex flex-col items-center justify-center h-64 text-center">
-              {error ? (
-                <>
-                  <p className="text-4xl mb-2">❌</p>
-                  <p className="text-sm text-gray-400">{error}</p>
-                </>
-              ) : (
-                <>
-                  <p className="text-4xl mb-2">🔍</p>
-                  <p className="text-sm text-gray-400">
-                    Détection automatique en cours...
-                  </p>
-                </>
-              )}
-            </div>
+            <>
+              <p className="text-4xl mb-2">🔍</p>
+              <p className="text-sm text-gray-400">
+                Détection automatique en cours...
+              </p>
+            </>
           )}
         </div>
+      )}
     </div>
   )
 }

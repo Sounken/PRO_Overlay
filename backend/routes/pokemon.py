@@ -83,26 +83,48 @@ def extract_stats(pokemon_data: dict) -> PokemonStats:
 
 
 def extract_types(pokemon_data: dict) -> list[PokemonType]:
-    """Extrait les types avec icônes et couleurs"""
-    # Mapping des noms de types vers leurs IDs PokeAPI
-    TYPE_IDS = {
-        "normal": 1, "fighting": 2, "flying": 3, "poison": 4,
-        "ground": 5, "rock": 6, "bug": 7, "ghost": 8,
-        "steel": 9, "fire": 10, "water": 11, "grass": 12,
-        "electric": 13, "psychic": 14, "ice": 15, "dragon": 16,
-        "dark": 17, "fairy": 18
-    }
-
+    """Extrait les types avec icônes et couleurs depuis PokeAPI"""
     types = []
 
     for type_entry in pokemon_data.get("types", []):
         type_name = type_entry["type"]["name"]
-        type_id = TYPE_IDS.get(type_name, 1)
+        type_url = type_entry["type"]["url"]
+
+        icon_url = ""
+        try:
+            # Récupère les données du type pour obtenir le sprite
+            import requests
+            type_response = requests.get(type_url)
+            type_response.raise_for_status()
+            type_data = type_response.json()
+
+            # Extrait le sprite de generation-ix/scarlet-violet s'il existe
+            sprites = type_data.get("sprites", {})
+            if sprites and isinstance(sprites, dict):
+                gen_ix = sprites.get("generation-ix", {})
+                if gen_ix and isinstance(gen_ix, dict):
+                    scarlet_violet = gen_ix.get("scarlet-violet", {})
+                    if scarlet_violet and isinstance(scarlet_violet, dict):
+                        icon_url = scarlet_violet.get("name_icon", "")
+        except Exception as e:
+            print(f"Erreur récupération sprite type {type_name}: {e}")
+
+        # Fallback si pas de sprite trouvé
+        if not icon_url:
+            TYPE_IDS = {
+                "normal": 1, "fighting": 2, "flying": 3, "poison": 4,
+                "ground": 5, "rock": 6, "bug": 7, "ghost": 8,
+                "steel": 9, "fire": 10, "water": 11, "grass": 12,
+                "electric": 13, "psychic": 14, "ice": 15, "dragon": 16,
+                "dark": 17, "fairy": 18
+            }
+            type_id = TYPE_IDS.get(type_name, 1)
+            icon_url = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/{type_id}.png"
 
         types.append(PokemonType(
             name=type_name,
             color=TypeMatchupCalculator.get_type_color(type_name),
-            icon_url=f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/{type_id}.png"
+            icon_url=icon_url
         ))
 
     return types
