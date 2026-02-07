@@ -46,20 +46,8 @@ async def detect_pokemon(request: OCRDetectionRequest):
                     height=screen_height - (2 * margin_y)
                 )
 
-        # Sauvegarde debug (optionnel)
-        import os
-        debug_dir = os.path.join(os.path.dirname(__file__), '..', 'debug')
-        os.makedirs(debug_dir, exist_ok=True)
-        debug_path = os.path.join(debug_dir, 'last_capture.png')
-        image.save(debug_path)
-        print(f"[OCR Debug] Capture sauvegardée: {debug_path}")
-
         # Détection OCR
         pokemon_name, confidence = ocr_engine.detect_pokemon(image)
-
-        # Logs pour debug
-        print(f"[OCR Debug] Confiance: {confidence:.1f}%")
-        print(f"[OCR Debug] Pokemon détecté: {pokemon_name}")
 
         if not pokemon_name:
             raise HTTPException(

@@ -1,6 +1,7 @@
-import { app, BrowserWindow, ipcMain, globalShortcut, screen } from 'electron';
-import { spawn, ChildProcess } from 'child_process';
+import { app, BrowserWindow, ipcMain, globalShortcut, screen, Menu } from 'electron';
+import { spawn, ChildProcess, execSync } from 'child_process';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -9,6 +10,7 @@ const __dirname = path.dirname(__filename);
 let backendProcess: ChildProcess | null = null;
 let dashboardWindow: BrowserWindow | null = null;
 let overlayWindow: BrowserWindow | null = null;
+let regionSelectorWindow: BrowserWindow | null = null;
 
 const BACKEND_PORT = 8000;
 const FRONTEND_PORT = 3000;
@@ -24,10 +26,28 @@ async function startBackend(): Promise<void> {
     ? path.join(process.resourcesPath, 'backend', 'backend.exe')
     : path.join(__dirname, '..', '..', 'backend', 'main.py');
 
-  // Commande à exécuter
-  // Sur Windows, utiliser 'py' (Python launcher) plutôt que 'python'
-  const pythonCommand = process.platform === 'win32' ? 'py' : 'python3';
-  const command = app.isPackaged ? backendPath : pythonCommand;
+  // Trouver le chemin Python (py launcher donne le vrai chemin, pas l'alias Windows Store)
+  let pythonPath = 'python3';
+  if (!app.isPackaged) {
+    const commands = [
+      'py -c "import sys; print(sys.executable)"',
+      'python -c "import sys; print(sys.executable)"',
+    ];
+    for (const cmd of commands) {
+      try {
+        const result = execSync(cmd, { encoding: 'utf-8', timeout: 5000 }).trim();
+        if (result && fs.existsSync(result)) {
+          pythonPath = result;
+          console.log(`[Backend] Python found at: ${pythonPath}`);
+          break;
+        }
+      } catch {
+        // Try next command
+      }
+    }
+  }
+
+  const command = app.isPackaged ? backendPath : pythonPath;
   const args = app.isPackaged ? [] : [backendPath, '--port', BACKEND_PORT.toString()];
 
   // Lancement du subprocess
@@ -41,6 +61,10 @@ async function startBackend(): Promise<void> {
 
   backendProcess.stderr?.on('data', (data) => {
     console.error(`[Backend Error] ${data.toString()}`);
+  });
+
+  backendProcess.on('error', (err) => {
+    console.error(`[Backend] Failed to start: ${err.message}`);
   });
 
   backendProcess.on('close', (code) => {
@@ -74,9 +98,13 @@ async function waitForBackend(url: string, maxAttempts = 30): Promise<void> {
  * Crée la fenêtre Dashboard
  */
 function createDashboardWindow(): void {
+  // Supprimer la barre de menu
+  Menu.setApplicationMenu(null);
+
   dashboardWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -92,9 +120,13 @@ function createDashboardWindow(): void {
 
   dashboardWindow.loadURL(url);
 
-  // DevTools en mode développement
+  // F12 pour DevTools en mode dev
   if (!app.isPackaged) {
-    dashboardWindow.webContents.openDevTools();
+    dashboardWindow.webContents.on('before-input-event', (_event, input) => {
+      if (input.key === 'F12') {
+        dashboardWindow?.webContents.toggleDevTools();
+      }
+    });
   }
 
   dashboardWindow.on('closed', () => {
@@ -143,6 +175,80 @@ function createOverlayWindow(): void {
 
   overlayWindow.on('closed', () => {
     overlayWindow = null;
+  });
+}
+
+/**
+ * Config helpers
+ */
+function getConfigPath(): string {
+  return app.isPackaged
+    ? path.join(process.resourcesPath, 'config.json')
+    : path.join(__dirname, '..', '..', 'config.json');
+}
+
+function readConfig(): Record<string, any> {
+  const raw = fs.readFileSync(getConfigPath(), 'utf-8');
+  return JSON.parse(raw);
+}
+
+function writeConfig(config: Record<string, any>): void {
+  fs.writeFileSync(getConfigPath(), JSON.stringify(config, null, 2), 'utf-8');
+}
+
+/**
+ * Crée la fenêtre de sélection de zone OCR
+ */
+function createRegionSelectorWindow(): void {
+  console.log('[RegionSelector] Creating window...');
+
+  if (regionSelectorWindow) {
+    console.log('[RegionSelector] Window already exists, focusing');
+    regionSelectorWindow.focus();
+    return;
+  }
+
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width, height } = primaryDisplay.size;
+  console.log(`[RegionSelector] Screen size: ${width}x${height}`);
+
+  regionSelectorWindow = new BrowserWindow({
+    x: 0,
+    y: 0,
+    width: width,
+    height: height,
+    transparent: true,
+    frame: false,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    resizable: false,
+    fullscreenable: false,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js'),
+    },
+  });
+
+  const url = app.isPackaged
+    ? `file://${path.join(__dirname, '..', 'index.html')}#region-selector`
+    : `http://localhost:${FRONTEND_PORT}#region-selector`;
+
+  console.log(`[RegionSelector] Loading URL: ${url}`);
+  regionSelectorWindow.loadURL(url);
+  regionSelectorWindow.setAlwaysOnTop(true, 'screen-saver');
+
+  regionSelectorWindow.webContents.on('did-finish-load', () => {
+    console.log('[RegionSelector] Page loaded successfully');
+  });
+
+  regionSelectorWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
+    console.error(`[RegionSelector] Failed to load: ${errorCode} - ${errorDescription}`);
+  });
+
+  regionSelectorWindow.on('closed', () => {
+    console.log('[RegionSelector] Window closed');
+    regionSelectorWindow = null;
   });
 }
 
@@ -220,4 +326,44 @@ ipcMain.handle('toggle-overlay', () => {
       overlayWindow.show();
     }
   }
+});
+
+ipcMain.handle('get-ocr-region', () => {
+  const config = readConfig();
+  return config.ocr?.region ?? null;
+});
+
+ipcMain.handle('save-ocr-region', (_event, region: { x: number; y: number; width: number; height: number }) => {
+  const config = readConfig();
+  const scaleFactor = screen.getPrimaryDisplay().scaleFactor;
+  config.ocr.region = {
+    enabled: true,
+    x: Math.round(region.x * scaleFactor),
+    y: Math.round(region.y * scaleFactor),
+    width: Math.round(region.width * scaleFactor),
+    height: Math.round(region.height * scaleFactor),
+  };
+  writeConfig(config);
+  return true;
+});
+
+ipcMain.handle('open-region-selector', () => {
+  console.log('[IPC] open-region-selector called');
+  createRegionSelectorWindow();
+});
+
+ipcMain.handle('close-region-selector', () => {
+  if (regionSelectorWindow) {
+    regionSelectorWindow.close();
+    regionSelectorWindow = null;
+  }
+});
+
+ipcMain.handle('get-screen-info', () => {
+  const primaryDisplay = screen.getPrimaryDisplay();
+  return {
+    width: primaryDisplay.size.width,
+    height: primaryDisplay.size.height,
+    scaleFactor: primaryDisplay.scaleFactor,
+  };
 });

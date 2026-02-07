@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Sidebar from './Sidebar'
 import Pokedex from './Pokedex'
+import Settings from './Settings'
 
 type View = 'pokedex' | 'team' | 'calculators' | 'settings'
 
@@ -24,11 +25,7 @@ function Dashboard() {
           </div>
         )
       case 'settings':
-        return (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-gray-400 text-xl">Paramètres - À venir</p>
-          </div>
-        )
+        return <Settings />
       default:
         return <Pokedex />
     }

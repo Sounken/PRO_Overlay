@@ -110,12 +110,6 @@ class OCREngine:
         # Prétraitement
         processed_image = self.preprocess_image(image)
 
-        # Sauvegarde pour debug
-        debug_dir = os.path.join(os.path.dirname(__file__), '..', 'debug')
-        os.makedirs(debug_dir, exist_ok=True)
-        processed_image.save(os.path.join(debug_dir, 'preprocessed.png'))
-        print(f"[OCR Engine] Image prétraitée sauvegardée")
-
         # Extraction OCR avec données de confiance
         data = pytesseract.image_to_data(
             processed_image,
@@ -188,24 +182,18 @@ class OCREngine:
         if matches:
             return matches[0]
 
-        # Nouvelle approche : chercher mot par mot
+        # Chercher mot par mot
         words = detected_name.split()
-        print(f"[OCR Engine] Recherche mot par mot dans: {words}")
 
         for word in words:
-            # Ignorer les mots trop courts
             if len(word) < 4:
                 continue
 
-            # Recherche exacte
             if word in POKEMON_NAMES:
-                print(f"[OCR Engine] Match exact trouvé: '{word}'")
                 return word
 
-            # Recherche approximative avec seuil plus bas
             word_matches = get_close_matches(word, POKEMON_NAMES, n=1, cutoff=0.7)
             if word_matches:
-                print(f"[OCR Engine] Match approximatif trouvé: '{word}' -> '{word_matches[0]}'")
                 return word_matches[0]
 
         return None
@@ -223,17 +211,9 @@ class OCREngine:
         # Extraction du texte
         text, confidence = self.extract_text(image)
 
-        # Debug logs
-        print(f"[OCR Engine] Texte brut détecté: '{text}'")
-        print(f"[OCR Engine] Confiance moyenne: {confidence:.1f}%")
-
         if confidence < self.confidence_threshold:
-            print(f"[OCR Engine] Confiance trop basse (seuil: {self.confidence_threshold}%)")
             return None, confidence
 
-        # Recherche du Pokémon correspondant
         pokemon_name = self.find_closest_pokemon(text)
-
-        print(f"[OCR Engine] Pokemon trouvé après matching: '{pokemon_name}'")
 
         return pokemon_name, confidence

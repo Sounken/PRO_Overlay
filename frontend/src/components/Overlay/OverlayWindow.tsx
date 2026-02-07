@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { pokemonAPI, Pokemon } from '@/services/api'
+import { useState, useEffect, useRef } from 'react'
+import { pokemonAPI, Pokemon, OCRRegion } from '@/services/api'
 import PokemonInfo from './PokemonInfo'
 import { motion } from 'framer-motion'
 
@@ -7,21 +7,36 @@ function OverlayWindow() {
   const [pokemon, setPokemon] = useState<Pokemon | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const ocrRegionRef = useRef<OCRRegion | undefined>(undefined)
 
-  // Simule la détection OCR automatique
+  // Charge la région OCR sauvegardée
+  useEffect(() => {
+    const loadRegion = async () => {
+      if (window.electronAPI) {
+        const config = await window.electronAPI.getOcrRegion()
+        if (config && config.enabled) {
+          ocrRegionRef.current = {
+            x: config.x,
+            y: config.y,
+            width: config.width,
+            height: config.height,
+          }
+        }
+      }
+    }
+    loadRegion()
+  }, [])
+
   const detectPokemon = async () => {
     setLoading(true)
     setError(null)
 
     try {
-      // Détection OCR (capture automatique de la région définie)
-      const detection = await pokemonAPI.detectPokemon()
-
-      // Récupère les données du Pokémon détecté
+      const detection = await pokemonAPI.detectPokemon(ocrRegionRef.current)
       const data = await pokemonAPI.getPokemon(detection.pokemon_name)
       setPokemon(data)
     } catch (err) {
-      setError('Aucun Pokémon détecté')
+      setError('Aucun Pokemon detecte')
       setPokemon(null)
     } finally {
       setLoading(false)

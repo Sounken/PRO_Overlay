@@ -1,14 +1,19 @@
 import { useEffect, useState } from 'react'
 import Dashboard from './components/Dashboard/Dashboard'
 import OverlayWindow from './components/Overlay/OverlayWindow'
+import RegionSelector from './components/RegionSelector/RegionSelector'
+
+type AppMode = 'dashboard' | 'overlay' | 'region-selector'
 
 function App() {
-  const [isOverlay, setIsOverlay] = useState(false)
+  const [mode, setMode] = useState<AppMode>('dashboard')
 
   useEffect(() => {
-    // Détecte si on est en mode overlay via le hash
     const checkMode = () => {
-      setIsOverlay(window.location.hash === '#overlay')
+      const hash = window.location.hash
+      if (hash === '#overlay') setMode('overlay')
+      else if (hash === '#region-selector') setMode('region-selector')
+      else setMode('dashboard')
     }
 
     checkMode()
@@ -17,7 +22,14 @@ function App() {
     return () => window.removeEventListener('hashchange', checkMode)
   }, [])
 
-  return isOverlay ? <OverlayWindow /> : <Dashboard />
+  switch (mode) {
+    case 'overlay':
+      return <OverlayWindow />
+    case 'region-selector':
+      return <RegionSelector />
+    default:
+      return <Dashboard />
+  }
 }
 
 export default App
