@@ -6,6 +6,18 @@ interface PokemonInfoProps {
 }
 
 function PokemonInfo({ pokemon }: PokemonInfoProps) {
+  const getStatColor = (value: number, maxValue: number = 150): string => {
+    const percentage = value / maxValue
+    // Dégradé rouge → vert basé sur le pourcentage
+    if (percentage <= 0.33) {
+      return '#ef4444' // Red
+    } else if (percentage <= 0.66) {
+      return '#eab308' // Yellow/Orange
+    } else {
+      return '#22c55e' // Green
+    }
+  }
+
   const getMultiplierLabel = (multiplier: number): string => {
     if (multiplier === 0) return '×0'
     if (multiplier === 0.25) return '×¼'
@@ -74,6 +86,37 @@ function PokemonInfo({ pokemon }: PokemonInfoProps) {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Base Stats */}
+      <div className="space-y-2">
+        <h4 className="text-sm font-semibold mb-2">📊 Stats</h4>
+        {Object.entries(pokemon.stats).map(([stat, value]) => {
+          const statLabel = {
+            hp: 'HP',
+            attack: 'ATK',
+            defense: 'DEF',
+            sp_attack: 'SP.ATK',
+            sp_defense: 'SP.DEF',
+            speed: 'SPD',
+          }[stat as keyof typeof pokemon.stats] || stat.toUpperCase()
+
+          return (
+            <div key={stat} className="flex items-center gap-2 text-xs">
+              <span className="w-12 font-semibold">{statLabel}</span>
+              <div className="flex-1 h-3 bg-gray-700 rounded-full overflow-hidden">
+                <div
+                  style={{
+                    width: `${(value / 150) * 100}%`,
+                    backgroundColor: getStatColor(value),
+                  }}
+                  className="h-full transition-all duration-300"
+                />
+              </div>
+              <span className="w-10 text-right font-semibold">{value}</span>
+            </div>
+          )
+        })}
       </div>
 
       {/* Weaknesses */}

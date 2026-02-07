@@ -17,6 +17,7 @@ interface ScreenInfo {
 function Settings() {
   const [region, setRegion] = useState<OcrRegion | null>(null)
   const [screenInfo, setScreenInfo] = useState<ScreenInfo | null>(null)
+  const [autoBattle, setAutoBattle] = useState(false)
 
   const loadData = async () => {
     if (window.electronAPI) {
@@ -24,6 +25,8 @@ function Settings() {
       setRegion(r)
       const s = await window.electronAPI.getScreenInfo()
       setScreenInfo(s)
+      const ab = await window.electronAPI.getAutoBattle()
+      setAutoBattle(ab)
     }
   }
 
@@ -37,11 +40,16 @@ function Settings() {
   }, [])
 
   const handleSelectRegion = async () => {
-    const hasAPI = !!window.electronAPI
-    const hasFn = typeof window.electronAPI?.openRegionSelector === 'function'
-    alert(`electronAPI: ${hasAPI}, openRegionSelector: ${hasFn}`)
-    if (hasFn) {
+    if (window.electronAPI?.openRegionSelector) {
       await window.electronAPI.openRegionSelector()
+    }
+  }
+
+  const handleToggleAutoBattle = async () => {
+    const newValue = !autoBattle
+    setAutoBattle(newValue)
+    if (window.electronAPI?.setAutoBattle) {
+      await window.electronAPI.setAutoBattle(newValue)
     }
   }
 
@@ -99,6 +107,32 @@ function Settings() {
         >
           {region?.enabled ? 'Redefinir la zone' : 'Definir la zone OCR'}
         </button>
+      </div>
+
+      {/* Auto Battle Mode */}
+      <div className="card">
+        <h2 className="text-xl font-semibold mb-4">Mode Combat Automatique</h2>
+        <p className="text-sm text-gray-400 mb-6">
+          L'overlay s'activera automatiquement quand vous detectez un Pokemon en combat et se fermera quand le combat se termine.
+        </p>
+
+        <div className="flex items-center gap-4">
+          <button
+            onClick={handleToggleAutoBattle}
+            className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+              autoBattle
+                ? 'bg-green-600 hover:bg-green-700'
+                : 'bg-gray-700 hover:bg-gray-600'
+            }`}
+          >
+            {autoBattle ? '✓ Active' : '○ Inactif'}
+          </button>
+          <span className="text-sm text-gray-400">
+            {autoBattle
+              ? 'Mode automatique activé'
+              : 'Cliquez pour activer le mode automatique'}
+          </span>
+        </div>
       </div>
     </div>
   )

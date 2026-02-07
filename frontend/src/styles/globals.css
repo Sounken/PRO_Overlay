@@ -20,3 +20,9 @@
     @apply bg-surface rounded-xl shadow-xl p-6;
   }
 }
+
+/* Mode overlay - rendre le body transparent */
+body.overlay-mode {
+  background: transparent !important;
+  background-image: none !important;
+}

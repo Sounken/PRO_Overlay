@@ -8,11 +8,11 @@
     "language": "eng",
     "confidence_threshold": 40,
     "region": {
-      "enabled": false,
-      "x": 0,
-      "y": 0,
-      "width": 0,
-      "height": 0
+      "enabled": true,
+      "x": 735,
+      "y": 420,
+      "width": 363,
+      "height": 140
     }
   },
   "overlay": {
@@ -23,7 +23,8 @@
     },
     "width_percent": 25,
     "height_percent": 30,
-    "opacity": 0.95
+    "opacity": 0.95,
+    "autoBattle": true
   },
   "cache": {
     "enabled": true,

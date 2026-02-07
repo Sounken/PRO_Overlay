@@ -22,6 +22,15 @@ function App() {
     return () => window.removeEventListener('hashchange', checkMode)
   }, [])
 
+  // Rendre le body transparent en mode overlay
+  useEffect(() => {
+    if (mode === 'overlay') {
+      document.body.classList.add('overlay-mode')
+    } else {
+      document.body.classList.remove('overlay-mode')
+    }
+  }, [mode])
+
   switch (mode) {
     case 'overlay':
       return <OverlayWindow />

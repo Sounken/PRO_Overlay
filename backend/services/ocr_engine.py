@@ -73,7 +73,7 @@ class OCREngine:
 
     def preprocess_image(self, image: Image.Image) -> Image.Image:
         """
-        Prétraitement de l'image pour améliorer l'OCR
+        Prétraitement de l'image pour améliorer l'OCR sur jeux vidéo
 
         Args:
             image: Image PIL à traiter
@@ -81,19 +81,27 @@ class OCREngine:
         Returns:
             Image prétraitée
         """
-        # Pour les jeux vidéo, prétraitement minimal
-        # Agrandissement 2x pour améliorer la lecture
-        width, height = image.size
-        image = image.resize((width * 2, height * 2), Image.Resampling.LANCZOS)
-
-        # Augmentation légère du contraste
         from PIL import ImageEnhance
-        enhancer = ImageEnhance.Contrast(image)
-        image = enhancer.enhance(1.5)
 
-        # Augmentation de la netteté
+        # Agrandissement 2.5x pour texte de jeu vidéo
+        width, height = image.size
+        image = image.resize((width * 3, height * 3), Image.Resampling.LANCZOS)
+
+        # Augmentation modérée du contraste
+        enhancer = ImageEnhance.Contrast(image)
+        image = enhancer.enhance(2.0)
+
+        # Augmentation de la saturation des couleurs
+        color_enhancer = ImageEnhance.Color(image)
+        image = color_enhancer.enhance(1.5)
+
+        # Augmentation modérée de la netteté
         sharpness_enhancer = ImageEnhance.Sharpness(image)
         image = sharpness_enhancer.enhance(2.0)
+
+        # Légère augmentation de la luminosité
+        brightness_enhancer = ImageEnhance.Brightness(image)
+        image = brightness_enhancer.enhance(1.1)
 
         return image
 
@@ -107,8 +115,14 @@ class OCREngine:
         Returns:
             Tuple (texte détecté, niveau de confiance 0-100)
         """
+        # Sauvegarde image brute pour debug
+        image.save('debug_01_raw.png')
+
         # Prétraitement
         processed_image = self.preprocess_image(image)
+
+        # Sauvegarde image après preprocessing
+        processed_image.save('debug_02_preprocessed.png')
 
         # Extraction OCR avec données de confiance
         data = pytesseract.image_to_data(

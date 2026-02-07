@@ -1,5 +1,5 @@
 import { app, BrowserWindow, ipcMain, globalShortcut, screen, Menu } from 'electron';
-import { spawn, ChildProcess, execSync } from 'child_process';
+import { spawn, exec, ChildProcess, execSync } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -47,27 +47,39 @@ async function startBackend(): Promise<void> {
     }
   }
 
-  const command = app.isPackaged ? backendPath : pythonPath;
-  const args = app.isPackaged ? [] : [backendPath, '--port', BACKEND_PORT.toString()];
+  if (app.isPackaged) {
+    // Mode packagé: lancer le exe directement
+    backendProcess = spawn(backendPath, [], {
+      cwd: path.dirname(backendPath),
+    });
+  } else {
+    // Mode développement: utiliser exec() qui gère mieux Windows
+    const backendCwd = path.join(__dirname, '..', '..', 'backend');
+    const pythonCmd = `"${pythonPath}" main.py --port ${BACKEND_PORT}`;
 
-  // Lancement du subprocess
-  backendProcess = spawn(command, args, {
-    cwd: app.isPackaged ? path.dirname(backendPath) : path.join(__dirname, '..', '..', 'backend'),
-  });
+    exec(pythonCmd, { cwd: backendCwd }, (error, stdout, stderr) => {
+      if (error && error.code !== 0) {
+        console.error(`[Backend] Error: ${error.message}`);
+      }
+      if (stdout) console.log(`[Backend] ${stdout}`);
+      if (stderr) console.error(`[Backend Error] ${stderr}`);
+    });
+    return; // exec() ne retourne pas un ChildProcess au même titre, on skip les listeners
+  }
 
-  backendProcess.stdout?.on('data', (data) => {
+  backendProcess?.stdout?.on('data', (data) => {
     console.log(`[Backend] ${data.toString()}`);
   });
 
-  backendProcess.stderr?.on('data', (data) => {
+  backendProcess?.stderr?.on('data', (data) => {
     console.error(`[Backend Error] ${data.toString()}`);
   });
 
-  backendProcess.on('error', (err) => {
+  backendProcess?.on('error', (err) => {
     console.error(`[Backend] Failed to start: ${err.message}`);
   });
 
-  backendProcess.on('close', (code) => {
+  backendProcess?.on('close', (code) => {
     console.log(`Backend exited with code ${code}`);
   });
 
@@ -141,14 +153,16 @@ function createOverlayWindow(): void {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
 
-  // Dimensions de l'overlay
-  const overlayWidth = 400;
-  const overlayHeight = 500;
+  // Dimensions de l'overlay (augmentées pour afficher les stats)
+  const overlayWidth = 420;
+  const overlayHeight = 700;
 
-  // Position en haut à droite avec 20% de marge
-  const marginPercent = 0.2;
-  const x = screenWidth - overlayWidth - (screenWidth * marginPercent);
-  const y = screenHeight * marginPercent;
+  // Position en haut à droite avec 10% de marge (20% - 10% = 10%)
+  // Puis on décale de +5% en bas
+  const marginXPercent = 0.1;
+  const marginYPercent = 0.25;
+  const x = screenWidth - overlayWidth - (screenWidth * marginXPercent);
+  const y = screenHeight * marginYPercent;
 
   overlayWindow = new BrowserWindow({
     width: overlayWidth,
@@ -159,6 +173,8 @@ function createOverlayWindow(): void {
     frame: false,
     alwaysOnTop: true,
     skipTaskbar: true,
+    focusable: false, // Ne pas prendre le focus du jeu
+    hasShadow: false,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -167,11 +183,23 @@ function createOverlayWindow(): void {
     show: false, // Caché par défaut, toggle avec F9
   });
 
+  // Forcer à rester toujours au premier plan
+  overlayWindow.setAlwaysOnTop(true, 'screen-saver', 1);
+
   const url = app.isPackaged
     ? `file://${path.join(__dirname, '..', 'index.html')}#overlay`
     : `http://localhost:${FRONTEND_PORT}#overlay`;
 
   overlayWindow.loadURL(url);
+
+  // Réappliquer alwaysOnTop quand la fenêtre gagne le focus
+  overlayWindow.on('focus', () => {
+    overlayWindow?.setAlwaysOnTop(true, 'screen-saver', 1);
+  });
+
+  overlayWindow.on('show', () => {
+    overlayWindow?.setAlwaysOnTop(true, 'screen-saver', 1);
+  });
 
   overlayWindow.on('closed', () => {
     overlayWindow = null;
@@ -184,7 +212,7 @@ function createOverlayWindow(): void {
 function getConfigPath(): string {
   return app.isPackaged
     ? path.join(process.resourcesPath, 'config.json')
-    : path.join(__dirname, '..', '..', 'config.json');
+    : path.join(__dirname, '..', '..', '..', 'config.json');
 }
 
 function readConfig(): Record<string, any> {
@@ -262,6 +290,7 @@ function registerHotkeys(): void {
         overlayWindow.hide();
       } else {
         overlayWindow.show();
+        overlayWindow.setAlwaysOnTop(true, 'screen-saver', 1);
       }
     }
   });
@@ -366,4 +395,23 @@ ipcMain.handle('get-screen-info', () => {
     height: primaryDisplay.size.height,
     scaleFactor: primaryDisplay.scaleFactor,
   };
+});
+
+ipcMain.handle('set-overlay-position', (_event, x: number, y: number) => {
+  if (overlayWindow) {
+    overlayWindow.setPosition(Math.floor(x), Math.floor(y));
+  }
+});
+
+ipcMain.handle('get-auto-battle', () => {
+  const config = readConfig();
+  return config.overlay?.autoBattle ?? false;
+});
+
+ipcMain.handle('set-auto-battle', (_event, enabled: boolean) => {
+  const config = readConfig();
+  if (!config.overlay) config.overlay = {};
+  config.overlay.autoBattle = enabled;
+  writeConfig(config);
+  return true;
 });

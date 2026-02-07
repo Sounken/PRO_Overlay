@@ -14,6 +14,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   closeRegionSelector: (): Promise<void> => ipcRenderer.invoke('close-region-selector'),
   getScreenInfo: (): Promise<{ width: number; height: number; scaleFactor: number }> =>
     ipcRenderer.invoke('get-screen-info'),
+  setOverlayPosition: (x: number, y: number): Promise<void> =>
+    ipcRenderer.invoke('set-overlay-position', x, y),
+  getAutoBattle: (): Promise<boolean> =>
+    ipcRenderer.invoke('get-auto-battle'),
+  setAutoBattle: (enabled: boolean): Promise<boolean> =>
+    ipcRenderer.invoke('set-auto-battle', enabled),
 });
 
 // Type definitions pour TypeScript
@@ -27,6 +33,9 @@ declare global {
       openRegionSelector: () => Promise<void>;
       closeRegionSelector: () => Promise<void>;
       getScreenInfo: () => Promise<{ width: number; height: number; scaleFactor: number }>;
+      setOverlayPosition: (x: number, y: number) => Promise<void>;
+      getAutoBattle: () => Promise<boolean>;
+      setAutoBattle: (enabled: boolean) => Promise<boolean>;
     };
   }
 }

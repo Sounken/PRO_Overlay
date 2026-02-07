@@ -5,7 +5,9 @@
       "Bash(npx tsc:*)",
       "Bash(where:*)",
       "Bash(py -c:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(npm run build:electron:*)",
+      "Bash(npm run:*)"
     ]
   }
 }
