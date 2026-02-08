@@ -18,7 +18,7 @@ timeout /t 1 /nobreak >nul
 
 REM Launch the application
 echo Launching PRO Helper...
-cd /d "%~dp0release-package\PROHelper"
+cd /d "%~dp0PROHelper"
 set APP_PATH=%cd%\PROHelper.exe
 if not exist "%APP_PATH%" (
     echo ERROR: PROHelper.exe not found!
