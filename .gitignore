@@ -268,8 +268,15 @@ Thumbs.db
 # ====================
 
 # Cache Pokemon data
-backend/data/cache/*.json
-!backend/data/cache/.gitkeep
+backend/data/cache/
+
+# Debug files
+backend/debug/
+backend/debug_*.png
+
+# Virtual environments
+backend/venv/
+frontend/node_modules/
 
 # Build artifacts
 backend/dist/
