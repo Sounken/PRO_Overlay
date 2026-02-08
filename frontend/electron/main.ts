@@ -21,6 +21,18 @@ const FRONTEND_PORT = 3000;
 async function startBackend(): Promise<void> {
   console.log('🚀 Starting backend...');
 
+  // Nettoyer les anciens processus backend sur le port
+  try {
+    execSync(`netstat -ano | find ":${BACKEND_PORT}"`, { encoding: 'utf-8' });
+    // Si on arrive ici, il y a un processus sur le port
+    execSync(`taskkill /F /IM backend.exe 2>nul || taskkill /F /IM python.exe 2>nul || echo "No process to kill"`, {
+      encoding: 'utf-8',
+    });
+    console.log('[Backend] Cleaned up old processes');
+  } catch {
+    // Port is free
+  }
+
   // Chemin du backend compilé
   const backendPath = app.isPackaged
     ? path.join(process.resourcesPath, 'backend', 'backend.exe')
@@ -51,6 +63,7 @@ async function startBackend(): Promise<void> {
     // Mode packagé: lancer le exe directement
     backendProcess = spawn(backendPath, [], {
       cwd: path.dirname(backendPath),
+      detached: false, // Important: ne pas détacher le processus
     });
   } else {
     // Mode développement: utiliser exec() qui gère mieux Windows
@@ -83,8 +96,8 @@ async function startBackend(): Promise<void> {
     console.log(`Backend exited with code ${code}`);
   });
 
-  // Attendre que le backend soit prêt
-  await waitForBackend(`http://localhost:${BACKEND_PORT}/health`);
+  // Attendre que le backend soit prêt (timeout réduit à 15 secondes)
+  await waitForBackend(`http://localhost:${BACKEND_PORT}/health`, 15);
   console.log('✅ Backend ready!');
 }
 
@@ -313,11 +326,27 @@ app.on('ready', async () => {
  * Fermeture propre
  */
 app.on('quit', () => {
+  // Fermer le backend proprement
   if (backendProcess) {
-    backendProcess.kill();
-    console.log('Backend process terminated');
+    try {
+      backendProcess.kill('SIGTERM');
+      console.log('✅ Backend process terminated');
+    } catch (err) {
+      console.error('Error terminating backend:', err);
+      // Force kill if SIGTERM doesn't work
+      try {
+        execSync(`taskkill /F /PID ${backendProcess.pid}`);
+      } catch {}
+    }
   }
+
+  // Nettoyer aussi les processus restants sur le port
+  try {
+    execSync(`taskkill /F /IM backend.exe 2>nul || true`);
+  } catch {}
+
   globalShortcut.unregisterAll();
+  console.log('👋 Application closed');
 });
 
 /**
