@@ -92,16 +92,16 @@ class PokeAPIClient:
         if self._is_cache_valid(cache_path):
             cached_data = self._read_cache(cache_path)
             if cached_data:
-                print(f"✓ Cache hit pour {identifier}")
+                print(f"[CACHE] Cache hit for {identifier}")
                 return cached_data
 
         # Cache invalide ou absent, fetch depuis l'API
-        print(f"⟳ Fetching {identifier} depuis PokeAPI...")
+        print(f"[FETCH] Fetching {identifier} from PokeAPI...")
         data = self._fetch_pokemon(identifier)
 
         if data:
             self._write_cache(cache_path, data)
-            print(f"✓ Données mises en cache pour {identifier}")
+            print(f"[CACHE] Data cached for {identifier}")
 
         return data
 
