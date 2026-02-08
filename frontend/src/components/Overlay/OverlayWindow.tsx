@@ -126,7 +126,7 @@ function OverlayWindow() {
             }
           } catch (fetchErr) {
             console.error('[OCR] Failed to fetch Pokémon data:', fetchErr)
-            setError('Erreur de chargement')
+            setError('Loading error')
             // Ne pas mettre à jour lastDetectedRef si la fetch a échoué
             lastDetectedRef.current = null
             setRecommendation(null)
@@ -155,7 +155,7 @@ function OverlayWindow() {
 
       // Seulement afficher l'erreur si on était en train de charger
       if (loading) {
-        setError('Erreur de détection')
+        setError('Detection error')
         setPokemon(null)
       }
       lastDetectedRef.current = null
@@ -251,7 +251,7 @@ function OverlayWindow() {
               <>
                 <p className="text-4xl mb-2">🔍</p>
                 <p className="text-sm text-gray-400">
-                  Détection automatique en cours...
+                  Auto-detecting...
                 </p>
               </>
             )}

@@ -9,7 +9,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "moduleResolution": "bundler",
-    "outDir": "./dist/electron",
+    "outDir": "./dist-electron",
     "rootDir": "./electron",
     "strict": true,
     "noUnusedLocals": true,

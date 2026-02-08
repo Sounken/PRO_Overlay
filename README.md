@@ -1,202 +1,129 @@
-# Pokemon Revolution Online - Helper
+# PRO Helper - Pokemon Revolution Online Assistant
 
-Application d'assistance pour Pokemon Revolution Online avec overlay en temps réel et dashboard de gestion.
+A desktop application for Pokemon Revolution Online that provides real-time Pokemon data, team management, and intelligent battle recommendations using OCR detection.
 
-## 🎯 Fonctionnalités
+## ✨ Features
 
-### Overlay (Prioritaire)
-- ✅ Détection OCR du nom du Pokémon adverse
-- ✅ Affichage instantané des faiblesses/résistances
-- ✅ EVs obtenus si le Pokémon est vaincu
-- ✅ Toggle avec hotkey (F9)
-- 🔄 Recommandation d'attaque selon ton équipe (À venir)
-- 🔄 Suggestion de switch (À venir)
+### Overlay (Real-time Battle Support)
+- ✅ Auto-detect enemy Pokemon with OCR
+- ✅ Display weaknesses & resistances instantly
+- ✅ Show earned Effort Values (EVs)
+- ✅ Toggle with F9 hotkey
+- ✅ Smart Pokemon switch recommendations based on type matchups
+- ✅ Automatic overlay activation in battle mode
 
 ### Dashboard
-- ✅ Pokédex : Recherche par nom anglais ou numéro
-- ✅ Fiche détaillée avec sprite haute qualité
-- ✅ Fond coloré selon la couleur dominante du Pokémon
-- ✅ Nom en français si disponible
-- ✅ Types avec icônes Gen 9 (Scarlet/Violet)
-- ✅ Statistiques avec barres de progression
-- ✅ Tableau des 18 types avec multiplicateurs
-- ✅ Effort Values (EVs) obtenus
-- 🔄 Gestion d'équipe (À venir)
-- 🔄 Calculateurs (Dégâts, EVs/IVs, Hidden Power) (À venir)
+- ✅ **Pokedex**: Search by name or ID number
+- ✅ Detailed Pokemon stats with visual bars
+- ✅ Type effectiveness chart (all 18 types)
+- ✅ Weakness & resistance information
+- ✅ Effort Value (EV) distribution
+- ✅ **Team Manager**: Build your 6-Pokemon team
+- ✅ Auto-detect team from game screen (OCR)
+- ✅ Get battle recommendations vs opponent
+- 🔄 Calculators (damage, EVs/IVs) - Coming soon
 
-## 🏗️ Architecture
+## 🚀 Installation
 
-```
-Backend Python (FastAPI) + Frontend Electron (React + TypeScript)
-```
+### Option 1: Portable Version (Recommended) ⭐
+1. Download `PROHelper-1.0.0-portable.zip` from [Releases](https://github.com/[username]/PRO_Overlay/releases)
+2. Extract the ZIP file
+3. Double-click `RUN.bat` to launch the application
+4. No installation needed - portable version works from any location
 
-- **Backend** : FastAPI avec OCR (Tesseract), PokeAPI client, cache JSON
-- **Frontend** : Electron + React + Tailwind CSS + Framer Motion
-- **Livrable** : Un seul fichier `PROHelper.exe` (~200MB)
+### Option 2: Installer Version
+1. Download `PROHelper-1.0.0-Setup.exe` from Releases
+2. Run the installer and follow the prompts
+3. Launch PRO Helper from your Start Menu
 
-## 📦 Installation
+**Requirements**: Windows 7 or later, 200 MB disk space, Python 3.10+ (backend only)
 
-### Prérequis
+## 🎮 Quick Start Guide
 
-#### Backend
-- Python 3.10+
-- Tesseract OCR
+### Step 1: Configure OCR Zone
+1. Open PRO Helper and go to **Settings**
+2. Click **Set OCR Zone**
+3. Draw a box around where Pokemon names appear in-game
+4. Click **Confirm**
 
-Installation Tesseract (Windows) :
-```bash
-# Télécharger depuis : https://github.com/UB-Mannheim/tesseract/wiki
-# Ou via chocolatey :
-choco install tesseract
-```
+### Step 2: Build Your Team
+- Go to **Team** tab
+- Search for Pokemon and add them, OR
+- Use **Detect Team via OCR** to auto-detect
 
-#### Frontend
-- Node.js 18+
-- npm ou yarn
+### Step 3: Play
+1. Open Pokemon Revolution Online
+2. Press **F9** to toggle the overlay
+3. When you encounter a Pokemon, the overlay shows:
+   - Enemy Pokemon stats
+   - Recommended Pokemon to switch to
+   - Type effectiveness info
 
-### Installation des dépendances
+## 📋 How to Use Each Feature
 
-#### Backend
-```bash
-cd backend
-pip install -r requirements.txt
-```
+### Pokedex Tab
+- Search by name (e.g., "Pikachu") or ID (e.g., "25")
+- View stats, types, EVs, and type matchups
+- Use the legend to understand type effectiveness
 
-#### Frontend
-```bash
-cd frontend
-npm install
-```
+### Team Tab
+- Add Pokemon manually or auto-detect from screen
+- Click **Active** to set your current Pokemon
+- Get recommendations against detected opponents
 
-## 🚀 Développement
+### Settings Tab
+- **OCR Detection Zone**: Where the app looks for enemy Pokemon
+- **Auto Battle Mode**: Auto-open overlay during combat
 
-### Lancer le backend
-```bash
-cd backend
-python main.py
-# Serveur sur http://localhost:8000
-```
+## ⌨️ Keyboard Shortcuts
+- **F9** - Toggle overlay on/off
+- **Escape** - Cancel OCR zone selection
 
-### Lancer le frontend (mode dev)
-```bash
-cd frontend
-npm run dev
-# Interface sur http://localhost:3000
-```
+## 🆘 Troubleshooting
 
-### Lancer Electron en dev
-```bash
-cd frontend
-npm run electron:dev
-```
+**"Tesseract OCR not found"**
+- Download from: https://github.com/UB-Mannheim/tesseract/wiki
+- Or run the installer again to install Tesseract
 
-## 📦 Build & Packaging
+**OCR not detecting Pokemon names**
+- Resize the OCR zone to match exactly where names appear
+- Try resetting the zone in Settings
+- Ensure good contrast in game graphics
 
-### 1. Compiler le backend en .exe
-```bash
-cd backend
-pyinstaller build.spec
-# Génère : dist/backend.exe
-```
+**Overlay not showing**
+- Press F9 to toggle manually
+- Check Settings → Auto Battle Mode
+- Ensure PRO Helper window is on top
 
-### 2. Compiler le frontend + packager
-```bash
-cd frontend
-npm run package
-# Génère : release/PROHelper-Setup.exe
-```
+**"Pokemon not found" error**
+- Use correct English name (e.g., "Pikachu" not "Pichu")
+- Try searching by ID number instead
+- Check internet connection
 
-### 3. Distribution
-Le fichier final sera disponible dans `frontend/release/` :
-- `PROHelper-Setup.exe` : Installateur (~200MB)
-- `PROHelper.exe` : Version portable
+## 📊 Type Effectiveness Legend
+- **×0** = Immune (attack has no effect)
+- **×¼, ×½** = Resistant (takes reduced damage)
+- **×1** = Normal damage
+- **×2, ×4** = Weakness (takes more damage)
 
-## 🎮 Utilisation
+## 💾 System Architecture
+- **Frontend**: Electron + React + TypeScript
+- **Backend**: FastAPI + Python + Tesseract OCR
+- **Data**: PokeAPI with local caching
 
-1. Lancer `PROHelper.exe`
-2. Le backend démarre automatiquement
-3. Dashboard s'ouvre automatiquement
-4. Jouer à Pokemon Revolution Online
-5. Appuyer sur **F9** pour toggle l'overlay
-6. L'overlay détecte automatiquement le Pokémon adverse
+## 📝 Notes
+- First launch installs Tesseract OCR (~100MB)
+- Internet required to sync Pokemon data
+- OCR works best at 1080p resolution or higher
+- Keep the app window visible during battles
 
-## ⚙️ Configuration
+## 📄 License
+MIT License - See LICENSE file
 
-Le fichier `config.json` permet de configurer :
-- Port du backend
-- Seuil de confiance OCR
-- Hotkey de l'overlay
-- Durée du cache
+## 🔗 Links
+- [PokéAPI](https://pokeapi.co/) - Pokemon data source
+- [Tesseract](https://github.com/tesseract-ocr/tesseract) - OCR engine
+- [Pokemon Revolution Online](https://www.pokemonrevolution.net/)
 
-## 🔧 Développement
-
-### Structure du projet
-
-```
-pokemon-pro-helper/
-├── backend/                 # Python FastAPI
-│   ├── main.py
-│   ├── routes/             # Endpoints API
-│   ├── services/           # OCR, PokeAPI, etc.
-│   ├── models/             # Pydantic schemas
-│   └── data/cache/         # Cache JSON
-│
-├── frontend/               # Electron + React
-│   ├── electron/           # Main process
-│   ├── src/                # React app
-│   │   ├── components/
-│   │   ├── services/
-│   │   └── hooks/
-│   └── public/
-│
-└── config.json
-```
-
-### API Endpoints
-
-#### Pokémon
-```
-GET /pokemon/{identifier}
-```
-
-#### OCR
-```
-POST /ocr/detect
-Body: { region?: { x, y, width, height } }
-```
-
-#### Cache
-```
-GET /cache/stats
-DELETE /cache/clear?pokemon={name}
-```
-
-#### Health
-```
-GET /health
-```
-
-## 📝 TODO
-
-- [ ] Compléter la liste des noms de Pokémon Gen 1-9 dans `ocr_engine.py`
-- [ ] Implémenter les recommandations d'attaque
-- [ ] Implémenter les suggestions de switch
-- [ ] Gestion d'équipe
-- [ ] Calculateurs (Dégâts, EVs/IVs, Hidden Power)
-- [ ] Paramètres utilisateur
-- [ ] WebSocket pour détection OCR en temps réel
-- [ ] Tests unitaires
-- [ ] CI/CD
-
-## 🤝 Contribution
-
-Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou une PR.
-
-## 📄 Licence
-
-MIT
-
-## 🙏 Remerciements
-
-- [PokeAPI](https://pokeapi.co/) pour les données Pokémon
-- [Tesseract OCR](https://github.com/tesseract-ocr/tesseract)
-- Communauté Pokemon Revolution Online
+---
+**Version**: 1.0.0 | **Last Updated**: February 2025

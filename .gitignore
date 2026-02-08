@@ -21,7 +21,7 @@ parts/
 sdist/
 var/
 wheels/
-share/python-wheels/
+share/python-wheels/  
 *.egg-info/
 .installed.cfg
 *.egg
@@ -275,6 +275,12 @@ backend/data/cache/*.json
 backend/dist/
 frontend/dist/
 frontend/release/
+
+# Compiled applications (too large for Git - use GitHub Releases instead)
+PROHelper/
+release-package/
+*.zip
+*.exe
 
 # Config overrides (keep base config.json)
 config.local.json

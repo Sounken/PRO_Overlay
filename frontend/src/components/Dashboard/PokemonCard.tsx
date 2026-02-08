@@ -9,11 +9,11 @@ interface PokemonCardProps {
 function PokemonCard({ pokemon }: PokemonCardProps) {
   const statNames = {
     hp: 'HP',
-    attack: 'Attaque',
-    defense: 'Défense',
-    sp_attack: 'Atq. Spé',
-    sp_defense: 'Déf. Spé',
-    speed: 'Vitesse',
+    attack: 'Attack',
+    defense: 'Defense',
+    sp_attack: 'Sp. Atk',
+    sp_defense: 'Sp. Def',
+    speed: 'Speed',
   }
 
   const getStatColor = (value: number): string => {
@@ -71,7 +71,7 @@ function PokemonCard({ pokemon }: PokemonCardProps) {
 
           {/* Stats */}
           <div className="space-y-3">
-            <h3 className="text-xl font-bold mb-3">Statistiques</h3>
+            <h3 className="text-xl font-bold mb-3">Stats</h3>
             {Object.entries(pokemon.stats).map(([key, value]) => {
               const statName = statNames[key as keyof typeof statNames] || key
               return (

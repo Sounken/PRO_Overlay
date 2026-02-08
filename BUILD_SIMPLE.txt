@@ -1,0 +1,116 @@
+╔════════════════════════════════════════════════════════════════════╗
+║         PRO HELPER - BUILD EXECUTABLE                              ║
+╚════════════════════════════════════════════════════════════════════╝
+
+STEP 1: VERIFY REQUIREMENTS
+===========================
+
+Before building, make sure you have:
+
+✓ Python 3.10+ installed
+  - Download from: https://www.python.org/
+  - IMPORTANT: Check "Add Python to PATH" during installation
+
+✓ Node.js 18+ installed
+  - Download from: https://nodejs.org/
+  - Use LTS version (recommended)
+
+✓ Windows 7 or later with 500MB free disk space
+
+
+STEP 2: BUILD
+=============
+
+Option A: Double-click (Easiest)
+  1. Find and double-click "build.bat" in the PRO-Overlay folder
+  2. Watch the build progress (takes 5-15 minutes)
+  3. Wait for "BUILD SUCCESSFUL" message
+
+Option B: Command Line
+  1. Open Command Prompt (Windows key + R, type "cmd")
+  2. Navigate to folder: cd path\to\PRO-Overlay
+  3. Run: build.bat
+  4. Wait for completion
+
+
+STEP 3: RESULT
+==============
+
+After successful build, you'll find:
+
+📦 PROHelper Setup 1.0.0.exe
+   - Full installer with uninstall option
+   - Installs in Program Files
+   - Recommended for distribution
+
+📦 PROHelper 1.0.0.exe
+   - Portable version (no installation)
+   - Can run from anywhere
+   - Good for USB/portable use
+
+Both files are in: frontend/release/
+
+
+STEP 4: TEST
+============
+
+1. Run PROHelper Setup 1.0.0.exe to install, OR
+2. Double-click PROHelper 1.0.0.exe for portable use
+3. Follow the Quick Start guide (see QUICK_START.md)
+
+
+TROUBLESHOOTING
+===============
+
+Problem: "Python not found"
+Solution:
+  - Restart your computer after installing Python
+  - Make sure "Add to PATH" was checked during install
+  - Try: py --version in Command Prompt
+
+Problem: "npm not found" or "Node not found"
+Solution:
+  - Restart your computer after installing Node.js
+  - Try: node --version in Command Prompt
+
+Problem: Build fails with errors
+Solution:
+  - See BUILD_GUIDE.md for detailed troubleshooting
+  - Check that both Python and Node.js are properly installed
+  - Make sure you have 500MB+ free disk space
+
+Problem: Stuck on "Installing dependencies"
+Solution:
+  - This is normal, it can take 5 minutes
+  - Be patient, don't interrupt the process
+  - Internet connection is required
+
+
+FILES INCLUDED
+==============
+
+build.bat              - Automated build script (RUN THIS)
+BUILD_GUIDE.md         - Detailed build troubleshooting
+QUICK_START.md         - User guide after installation
+README.md              - Full documentation
+INSTALLATION_FR.md     - French installation guide
+
+
+NEXT STEPS
+==========
+
+After successful build:
+
+1. Distribute the .exe files to users
+2. Users can install without any coding knowledge
+3. Or provide QUICK_START.md for first-time users
+4. See README.md for full documentation
+
+
+═══════════════════════════════════════════════════════════════════════
+
+Ready? Let's go!
+
+Double-click build.bat or run it from Command Prompt to start building.
+
+═══════════════════════════════════════════════════════════════════════

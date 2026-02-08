@@ -30,7 +30,7 @@ function TypeGrid({ typeEffectiveness }: TypeGridProps) {
 
   return (
     <div>
-      <h3 className="text-xl font-bold mb-4">Efficacité des Types</h3>
+      <h3 className="text-xl font-bold mb-4">Type Effectiveness</h3>
       <div className="grid grid-cols-6 gap-3">
         {sortedTypes.map(([typeName, data]) => (
           <div
@@ -55,19 +55,19 @@ function TypeGrid({ typeEffectiveness }: TypeGridProps) {
 
       {/* Legend */}
       <div className="mt-6 p-4 bg-black/20 rounded-lg">
-        <p className="text-sm text-gray-400 mb-2 font-semibold">Légende :</p>
+        <p className="text-sm text-gray-400 mb-2 font-semibold">Legend:</p>
         <div className="flex flex-wrap gap-4 text-xs">
           <span className="text-gray-400">
-            <span className="font-bold">×0</span> = Immunité
+            <span className="font-bold">×0</span> = Immune
           </span>
           <span className="text-secondary">
-            <span className="font-bold">×¼, ×½</span> = Résistance
+            <span className="font-bold">×¼, ×½</span> = Resist
           </span>
           <span className="text-gray-400">
             <span className="font-bold">×1</span> = Normal
           </span>
           <span className="text-danger">
-            <span className="font-bold">×2, ×4</span> = Faiblesse
+            <span className="font-bold">×2, ×4</span> = Weakness
           </span>
         </div>
       </div>

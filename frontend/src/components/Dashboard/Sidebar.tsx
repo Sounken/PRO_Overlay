@@ -7,10 +7,10 @@ interface SidebarProps {
 
 function Sidebar({ currentView, onViewChange }: SidebarProps) {
   const menuItems = [
-    { id: 'pokedex', label: 'Pokédex', icon: '📖' },
-    { id: 'team', label: 'Équipe', icon: '⚔️' },
-    { id: 'calculators', label: 'Calculateurs', icon: '🧮' },
-    { id: 'settings', label: 'Paramètres', icon: '⚙️' },
+    { id: 'pokedex', label: 'Pokedex', icon: '📖' },
+    { id: 'team', label: 'Team', icon: '⚔️' },
+    { id: 'calculators', label: 'Calculators', icon: '🧮' },
+    { id: 'settings', label: 'Settings', icon: '⚙️' },
   ]
 
   return (

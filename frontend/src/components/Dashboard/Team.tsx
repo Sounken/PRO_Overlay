@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { POKEMON_NAMES } from '@/constants/pokemon'
 import { teamAPI } from '@/services/api'
 
@@ -59,7 +59,7 @@ function Team() {
   // Ajouter un Pokémon à l'équipe
   const handleAddPokemon = async (name: string) => {
     if (team.length >= 6) {
-      alert('Équipe complète (max 6 Pokémon)')
+      alert('Team full (max 6 Pokemon)')
       return
     }
 
@@ -70,7 +70,7 @@ function Team() {
       setSearchInput('')
       setSuggestions([])
     } else {
-      alert(result?.error || 'Erreur ajout')
+      alert(result?.error || 'Error adding Pokemon')
     }
   }
 
@@ -128,7 +128,7 @@ function Team() {
           }
         } catch (err) {
           console.error('[Team OCR] Error detecting team:', err)
-          alert('Erreur lors de la détection OCR')
+          alert('Error during OCR detection')
         }
       }, 500)
     }
@@ -136,18 +136,18 @@ function Team() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h1 className="text-4xl font-bold mb-2">Équipe</h1>
-      <p className="text-gray-400 mb-8">Créez votre équipe de Pokémon pour les recommandations en combat</p>
+      <h1 className="text-4xl font-bold mb-2">Team</h1>
+      <p className="text-gray-400 mb-8">Create your Pokemon team for battle recommendations</p>
 
-      {/* Recherche et ajout */}
+      {/* Search and Add */}
       <div className="card mb-6">
-        <h2 className="text-xl font-semibold mb-4">Ajouter un Pokémon</h2>
+        <h2 className="text-xl font-semibold mb-4">Add Pokemon</h2>
         <div className="relative mb-3">
           <input
             type="text"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Chercher un Pokémon (ex: pikachu, charizard...)"
+            placeholder="Search Pokemon (e.g. pikachu, charizard...)"
             className="w-full px-4 py-2 bg-surface border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary"
           />
           {suggestions.length > 0 && (
@@ -166,20 +166,20 @@ function Team() {
         </div>
       </div>
 
-      {/* Détecteur OCR */}
+      {/* OCR Detector */}
       <div className="card mb-6">
-        <h2 className="text-xl font-semibold mb-4">Détection automatique</h2>
+        <h2 className="text-xl font-semibold mb-4">Auto Detect</h2>
         <button
           onClick={handleDetectTeam}
           className="px-6 py-3 bg-primary hover:bg-primary/80 rounded-lg font-semibold transition-colors"
         >
-          Détecter mon équipe via OCR
+          Detect Team via OCR
         </button>
       </div>
 
-      {/* Affichage de l'équipe */}
+      {/* Team Display */}
       <div className="card">
-        <h2 className="text-xl font-semibold mb-4">Équipe ({team.length}/6)</h2>
+        <h2 className="text-xl font-semibold mb-4">Team ({team.length}/6)</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {Array.from({ length: 6 }).map((_, idx) => {
             const member = team.find((p) => p.slot === idx + 1)
@@ -206,7 +206,7 @@ function Team() {
                             : 'bg-white/10 text-gray-300 hover:bg-white/20'
                         }`}
                       >
-                        {activePokemon === member.name ? '✓ Actif' : 'Actif'}
+                        {activePokemon === member.name ? '✓ Active' : 'Active'}
                       </button>
                       <button
                         onClick={() => handleRemoveTeamMember(idx + 1)}

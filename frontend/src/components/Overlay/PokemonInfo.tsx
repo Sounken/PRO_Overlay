@@ -105,7 +105,7 @@ function PokemonInfo({ pokemon }: PokemonInfoProps) {
       <div className="grid grid-cols-2 gap-3 mt-4">
         <div>
           <h4 className="text-[10px] uppercase font-bold text-gray-400 mb-2 tracking-widest">
-            Faiblesses
+            Weaknesses
           </h4>
           <div className="flex flex-wrap gap-1">
             {weaknesses.map(([typeName, data]) => (
@@ -126,7 +126,7 @@ function PokemonInfo({ pokemon }: PokemonInfoProps) {
         </div>
         <div>
           <h4 className="text-[10px] uppercase font-bold text-gray-400 mb-2 tracking-widest">
-            Résistances
+            Resistances
           </h4>
           <div className="flex flex-wrap gap-1">
             {resistances.map(([typeName, data]) => (

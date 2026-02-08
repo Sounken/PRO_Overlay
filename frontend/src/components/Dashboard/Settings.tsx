@@ -60,17 +60,17 @@ function Settings() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h1 className="text-4xl font-bold mb-2">Parametres</h1>
-      <p className="text-gray-400 mb-8">Configuration de l'application</p>
+      <h1 className="text-4xl font-bold mb-2">Settings</h1>
+      <p className="text-gray-400 mb-8">Application Configuration</p>
 
       {/* OCR Region */}
       <div className="card mb-6">
-        <h2 className="text-xl font-semibold mb-4">Zone de detection OCR</h2>
+        <h2 className="text-xl font-semibold mb-4">OCR Detection Zone</h2>
 
         {region && region.enabled ? (
           <div>
             <p className="text-sm text-gray-300 mb-4">
-              Zone actuelle : ({region.x}, {region.y}) - {region.width}x{region.height} px
+              Current zone: ({region.x}, {region.y}) - {region.width}x{region.height} px
             </p>
 
             {/* Visual preview */}
@@ -97,7 +97,7 @@ function Settings() {
           </div>
         ) : (
           <p className="text-sm text-gray-400 mb-4">
-            Aucune zone configuree. La detection utilise la zone centrale de l'ecran (60%).
+            No zone configured. Detection uses the center area of the screen (60%).
           </p>
         )}
 
@@ -105,15 +105,15 @@ function Settings() {
           onClick={handleSelectRegion}
           className="px-6 py-3 bg-primary hover:bg-primary/80 rounded-lg font-semibold transition-colors"
         >
-          {region?.enabled ? 'Redefinir la zone' : 'Definir la zone OCR'}
+          {region?.enabled ? 'Reset Zone' : 'Set OCR Zone'}
         </button>
       </div>
 
       {/* Auto Battle Mode */}
       <div className="card">
-        <h2 className="text-xl font-semibold mb-4">Mode Combat Automatique</h2>
+        <h2 className="text-xl font-semibold mb-4">Auto Battle Mode</h2>
         <p className="text-sm text-gray-400 mb-6">
-          L'overlay s'activera automatiquement quand vous detectez un Pokemon en combat et se fermera quand le combat se termine.
+          The overlay will automatically activate when a Pokemon is detected and close when battle ends.
         </p>
 
         <div className="flex items-center gap-4">
@@ -125,12 +125,12 @@ function Settings() {
                 : 'bg-gray-700 hover:bg-gray-600'
             }`}
           >
-            {autoBattle ? '✓ Active' : '○ Inactif'}
+            {autoBattle ? '✓ Active' : '○ Inactive'}
           </button>
           <span className="text-sm text-gray-400">
             {autoBattle
-              ? 'Mode automatique activé'
-              : 'Cliquez pour activer le mode automatique'}
+              ? 'Auto mode enabled'
+              : 'Click to enable auto mode'}
           </span>
         </div>
       </div>

@@ -36,7 +36,7 @@ function RecommendationBanner({ recommendation }: RecommendationBannerProps) {
             <span className="text-xl">🔄</span>
             <div className="flex-1 min-w-0">
               <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide leading-tight">
-                Changement conseillé
+                Recommended Switch
               </p>
               <p className="text-base font-bold text-white uppercase truncate">
                 {recommendation.recommended_pokemon}

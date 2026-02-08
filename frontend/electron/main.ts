@@ -127,19 +127,17 @@ function createDashboardWindow(): void {
   });
 
   const url = app.isPackaged
-    ? `file://${path.join(__dirname, '..', 'index.html')}`
+    ? `file://${path.join(__dirname, '..', 'dist', 'index.html')}`
     : `http://localhost:${FRONTEND_PORT}`;
 
   dashboardWindow.loadURL(url);
 
-  // F12 pour DevTools en mode dev
-  if (!app.isPackaged) {
-    dashboardWindow.webContents.on('before-input-event', (_event, input) => {
-      if (input.key === 'F12') {
-        dashboardWindow?.webContents.toggleDevTools();
-      }
-    });
-  }
+  // F12 pour DevTools (mode dev et production)
+  dashboardWindow.webContents.on('before-input-event', (_event, input) => {
+    if (input.key === 'F12') {
+      dashboardWindow?.webContents.toggleDevTools();
+    }
+  });
 
   dashboardWindow.on('closed', () => {
     dashboardWindow = null;
@@ -187,7 +185,7 @@ function createOverlayWindow(): void {
   overlayWindow.setAlwaysOnTop(true, 'screen-saver', 1);
 
   const url = app.isPackaged
-    ? `file://${path.join(__dirname, '..', 'index.html')}#overlay`
+    ? `file://${path.join(__dirname, '..', 'dist', 'index.html')}#overlay`
     : `http://localhost:${FRONTEND_PORT}#overlay`;
 
   overlayWindow.loadURL(url);
@@ -259,7 +257,7 @@ function createRegionSelectorWindow(): void {
   });
 
   const url = app.isPackaged
-    ? `file://${path.join(__dirname, '..', 'index.html')}#region-selector`
+    ? `file://${path.join(__dirname, '..', 'dist', 'index.html')}#region-selector`
     : `http://localhost:${FRONTEND_PORT}#region-selector`;
 
   console.log(`[RegionSelector] Loading URL: ${url}`);
@@ -438,7 +436,7 @@ function createTeamRegionSelectorWindow(): void {
   });
 
   const url = app.isPackaged
-    ? `file://${path.join(__dirname, '..', 'index.html')}#team-region-selector`
+    ? `file://${path.join(__dirname, '..', 'dist', 'index.html')}#team-region-selector`
     : `http://localhost:${FRONTEND_PORT}#team-region-selector`;
 
   teamRegionSelectorWindow.loadURL(url);

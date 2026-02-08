@@ -52,13 +52,6 @@ function TeamRegionSelector() {
   const handleConfirm = useCallback(async () => {
     if (!rect) return
     await window.electronAPI?.saveTeamRegion(rect)
-    // Trigger backend detection
-    const region = {
-      x: Math.round(rect.x),
-      y: Math.round(rect.y),
-      width: Math.round(rect.width),
-      height: Math.round(rect.height),
-    }
     // Note: Actual OCR detection is done in the Team component
     // Just close the selector here
     await window.electronAPI?.closeTeamRegionSelector()
@@ -111,10 +104,10 @@ function TeamRegionSelector() {
         <div className="fixed top-8 left-1/2 -translate-x-1/2 pointer-events-none z-10">
           <div className="bg-black/80 backdrop-blur-sm px-8 py-4 rounded-xl text-center">
             <p className="text-white text-lg font-semibold mb-1">
-              Cliquez et glissez pour selectionner la zone d'equipe
+              Click and drag to select the team zone
             </p>
             <p className="text-gray-400 text-sm">
-              Selectionnez la zone contenant les 6 Pokémon de l'équipe - Echap pour annuler
+              Select the area containing your 6 Pokemon - Press Escape to cancel
             </p>
           </div>
         </div>
@@ -134,13 +127,13 @@ function TeamRegionSelector() {
             onClick={handleConfirm}
             className="px-6 py-3 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg shadow-lg transition-colors"
           >
-            Confirmer
+            Confirm
           </button>
           <button
             onClick={handleRetry}
             className="px-6 py-3 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg shadow-lg transition-colors"
           >
-            Recommencer
+            Retry
           </button>
         </div>
       )}

@@ -102,10 +102,10 @@ function RegionSelector() {
         <div className="fixed top-8 left-1/2 -translate-x-1/2 pointer-events-none z-10">
           <div className="bg-black/80 backdrop-blur-sm px-8 py-4 rounded-xl text-center">
             <p className="text-white text-lg font-semibold mb-1">
-              Cliquez et glissez pour selectionner la zone OCR
+              Click and drag to select the OCR zone
             </p>
             <p className="text-gray-400 text-sm">
-              Selectionnez la zone ou apparait le nom du Pokemon - Echap pour annuler
+              Select the area where the Pokemon name appears - Press Escape to cancel
             </p>
           </div>
         </div>
@@ -125,13 +125,13 @@ function RegionSelector() {
             onClick={handleConfirm}
             className="px-6 py-3 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg shadow-lg transition-colors"
           >
-            Confirmer
+            Confirm
           </button>
           <button
             onClick={handleRetry}
             className="px-6 py-3 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg shadow-lg transition-colors"
           >
-            Recommencer
+            Retry
           </button>
         </div>
       )}

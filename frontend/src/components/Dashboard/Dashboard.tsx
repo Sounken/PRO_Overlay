@@ -18,7 +18,7 @@ function Dashboard() {
       case 'calculators':
         return (
           <div className="flex items-center justify-center h-full">
-            <p className="text-gray-400 text-xl">Calculateurs - À venir</p>
+            <p className="text-gray-400 text-xl">Calculators - Coming Soon</p>
           </div>
         )
       case 'settings':

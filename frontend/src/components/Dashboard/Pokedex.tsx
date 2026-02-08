@@ -32,9 +32,9 @@ function Pokedex() {
     <div className="max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">Pokédex</h1>
+        <h1 className="text-4xl font-bold mb-2">Pokedex</h1>
         <p className="text-gray-400">
-          Recherchez un Pokémon par nom anglais ou numéro
+          Search Pokemon by English name or number
         </p>
       </div>
 
@@ -45,7 +45,7 @@ function Pokedex() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Ex: Gengar, 94, Pikachu..."
+            placeholder="E.g: Gengar, 94, Pikachu..."
             className="flex-1 px-6 py-4 bg-surface rounded-xl border border-white/10 focus:border-primary focus:outline-none transition-colors text-lg"
           />
           <motion.button
@@ -55,7 +55,7 @@ function Pokedex() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            {loading ? 'Recherche...' : 'Rechercher'}
+            {loading ? 'Searching...' : 'Search'}
           </motion.button>
         </div>
       </form>
@@ -79,7 +79,7 @@ function Pokedex() {
         <div className="text-center py-20">
           <p className="text-6xl mb-4">🔍</p>
           <p className="text-gray-400 text-lg">
-            Recherchez un Pokémon pour afficher ses informations
+            Search for a Pokemon to view information
           </p>
         </div>
       )}
