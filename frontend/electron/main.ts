@@ -368,44 +368,25 @@ app.on('quit', () => {
 });
 
 /**
- * Helper: Kill all backend processes reliably
+ * Helper: Kill all backend processes
+ * Uses spawn (non-blocking) instead of execSync
  */
 function killBackendProcesses(): void {
-  console.log('[killBackendProcesses] Starting cleanup...');
+  // Kill backend.exe, python.exe, python3.exe
+  // Using spawn is non-blocking and more reliable than execSync
+  spawn('cmd.exe', ['/c', 'taskkill /F /IM backend.exe /T 2>nul & taskkill /F /IM python.exe /T 2>nul & taskkill /F /IM python3.exe /T 2>nul'], {
+    detached: false,
+    stdio: 'ignore',
+    windowsHide: true,
+  });
 
-  // Try PowerShell first (most reliable on Windows)
-  try {
-    const psCmd = `Stop-Process -Name backend -Force -ErrorAction SilentlyContinue; Stop-Process -Name python -Force -ErrorAction SilentlyContinue`;
-    execSync(`powershell -NoProfile -Command "${psCmd}"`, { stdio: 'ignore', timeout: 5000 });
-    console.log('[killBackendProcesses] ✅ PowerShell killed processes');
-  } catch (err) {
-    console.log('[killBackendProcesses] PowerShell failed, trying taskkill');
-  }
-
-  // Fallback 1: taskkill backend.exe
-  try {
-    execSync('taskkill /F /IM backend.exe /T', { stdio: 'ignore', timeout: 5000 });
-    console.log('[killBackendProcesses] ✅ taskkill killed backend.exe');
-  } catch {}
-
-  // Fallback 2: taskkill python.exe
-  try {
-    execSync('taskkill /F /IM python.exe /T', { stdio: 'ignore', timeout: 5000 });
-    console.log('[killBackendProcesses] ✅ taskkill killed python.exe');
-  } catch {}
-
-  // Direct Node.js kill
+  // Also kill the Node process object directly
   if (backendProcess) {
     try {
       backendProcess.kill('SIGKILL');
-      console.log('[killBackendProcesses] ✅ Killed Node backendProcess');
-    } catch (err) {
-      console.log('[killBackendProcesses] Failed to kill backendProcess:', err);
-    }
+    } catch {}
     backendProcess = null;
   }
-
-  console.log('[killBackendProcesses] ✅ Cleanup complete');
 }
 
 /**
