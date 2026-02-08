@@ -80,6 +80,17 @@ export interface OCRRegion {
   height: number
 }
 
+export interface TeamMember {
+  name: string
+  slot: number
+}
+
+export interface TeamRecommendation {
+  recommended_pokemon: string | null
+  show_recommendation: boolean
+  reasoning: string
+}
+
 /**
  * API Methods
  */
@@ -127,6 +138,35 @@ export const pokemonAPI = {
     } catch {
       return false
     }
+  },
+}
+
+/**
+ * API pour la gestion d'équipe et recommandations
+ */
+export const teamAPI = {
+  /**
+   * Obtient une recommandation de Pokémon pour combattre l'adversaire
+   */
+  getRecommendation: async (
+    opponentName: string,
+    team: string[],
+    activePokemon?: string
+  ): Promise<TeamRecommendation> => {
+    const response = await api.post('/team/recommend', {
+      opponent_name: opponentName,
+      team,
+      active_pokemon: activePokemon,
+    })
+    return response.data
+  },
+
+  /**
+   * Détecte les Pokémon d'une équipe depuis une zone d'écran
+   */
+  detectTeamFromZone: async (region: OCRRegion): Promise<string[]> => {
+    const response = await api.post('/team/detect-from-zone', region)
+    return response.data.detected_pokemon
   },
 }
 

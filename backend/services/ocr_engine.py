@@ -238,14 +238,8 @@ class OCREngine:
         Returns:
             Tuple (texte détecté, niveau de confiance 0-100)
         """
-        # Sauvegarde image brute pour debug
-        image.save('debug_01_raw.png')
-
         # Prétraitement
         processed_image = self.preprocess_image(image)
-
-        # Sauvegarde image après preprocessing
-        processed_image.save('debug_02_preprocessed.png')
 
         # Extraction OCR avec données de confiance
         data = pytesseract.image_to_data(
@@ -271,9 +265,6 @@ class OCREngine:
         # Combine le texte et calcule la confiance moyenne
         full_text = " ".join(texts)
         avg_confidence = sum(confidences) / len(confidences)
-
-        # DEBUG: Afficher le texte brut détecté
-        print(f"[OCR] Raw text: '{full_text}' | Confiance: {avg_confidence:.1f}%")
 
         return full_text, avg_confidence
 

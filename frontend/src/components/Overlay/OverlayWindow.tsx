@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
-import { pokemonAPI, Pokemon, OCRRegion } from '@/services/api'
+import { pokemonAPI, Pokemon, OCRRegion, teamAPI } from '@/services/api'
 import PokemonInfo from './PokemonInfo'
+import RecommendationBanner, { TeamRecommendation } from './RecommendationBanner'
 
 function OverlayWindow() {
   const [pokemon, setPokemon] = useState<Pokemon | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isDragging, setIsDragging] = useState(false)
+  const [recommendation, setRecommendation] = useState<TeamRecommendation | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const ocrRegionRef = useRef<OCRRegion | undefined>(undefined)
   const windowPosRef = useRef({ x: 0, y: 0 })
@@ -15,8 +17,10 @@ function OverlayWindow() {
   const autoBattleRef = useRef(false)
   const inBattleRef = useRef(false)
   const lastBattleStateChangeRef = useRef(0)
+  const teamRef = useRef<string[]>([])
+  const activePokemonRef = useRef<string | null>(null)
 
-  // Charge la région OCR et le mode autoBattle au montage
+  // Charge la région OCR, le mode autoBattle, et l'équipe au montage
   useEffect(() => {
     const loadConfig = async () => {
       if (window.electronAPI) {
@@ -31,6 +35,14 @@ function OverlayWindow() {
         }
         const ab = await window.electronAPI.getAutoBattle()
         autoBattleRef.current = ab
+
+        // Charger l'équipe
+        const team = await window.electronAPI.getTeam()
+        if (team && team.pokemon) {
+          teamRef.current = team.pokemon.map((p: any) => p.name.toLowerCase())
+          activePokemonRef.current = team.active_pokemon?.toLowerCase() || null
+          console.log('[Team] Loaded team:', teamRef.current, 'Active:', activePokemonRef.current)
+        }
       }
     }
     loadConfig()
@@ -92,17 +104,39 @@ function OverlayWindow() {
           try {
             const data = await pokemonAPI.getPokemon(debugData.detected_pokemon)
             setPokemon(data)
+
+            // Charger la recommandation d'équipe si une équipe existe
+            if (teamRef.current && teamRef.current.length > 0) {
+              try {
+                console.log('[Team] Getting recommendation for:', debugData.detected_pokemon, 'Team:', teamRef.current)
+                const rec = await teamAPI.getRecommendation(
+                  debugData.detected_pokemon.toLowerCase(),
+                  teamRef.current,
+                  activePokemonRef.current || undefined
+                )
+                console.log('[Team] Recommendation response:', rec)
+                setRecommendation(rec)
+              } catch (recErr) {
+                console.error('[Team] Failed to get recommendation:', recErr)
+                setRecommendation(null)
+              }
+            } else {
+              console.log('[Team] No team loaded, skipping recommendation')
+              setRecommendation(null)
+            }
           } catch (fetchErr) {
             console.error('[OCR] Failed to fetch Pokémon data:', fetchErr)
             setError('Erreur de chargement')
             // Ne pas mettre à jour lastDetectedRef si la fetch a échoué
             lastDetectedRef.current = null
+            setRecommendation(null)
           }
         }
       } else {
         // Pas de Pokémon détecté → clear affichage
         setPokemon(null)
         setError(null)
+        setRecommendation(null)
         lastDetectedRef.current = null
       }
     } catch (err) {
@@ -130,11 +164,11 @@ function OverlayWindow() {
     }
   }
 
-  // Détection automatique toutes les 2 secondes
+  // Détection automatique toutes les 1 seconde
   useEffect(() => {
     const interval = setInterval(() => {
       detectPokemon()
-    }, 2000)
+    }, 1000)
 
     return () => clearInterval(interval)
   }, [])
@@ -194,30 +228,36 @@ function OverlayWindow() {
     <div
       ref={containerRef}
       onMouseDown={handleMouseDown}
-      className="w-full h-full select-none overflow-hidden"
+      className="w-full h-full select-none overflow-visible relative"
       style={{
         cursor: isDragging ? 'grabbing' : 'grab',
       }}
     >
-      {pokemon ? (
-        <PokemonInfo pokemon={pokemon} />
-      ) : (
-        <div className="flex flex-col items-center justify-center h-64 text-center">
-          {error ? (
-            <>
-              <p className="text-4xl mb-2">❌</p>
-              <p className="text-sm text-gray-400">{error}</p>
-            </>
-          ) : (
-            <>
-              <p className="text-4xl mb-2">🔍</p>
-              <p className="text-sm text-gray-400">
-                Détection automatique en cours...
-              </p>
-            </>
-          )}
-        </div>
-      )}
+      <div className="w-full relative">
+        {pokemon ? (
+          <div className="relative">
+            <PokemonInfo pokemon={pokemon} />
+            {/* Recommendation Banner */}
+            <RecommendationBanner recommendation={recommendation} />
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center h-64 text-center">
+            {error ? (
+              <>
+                <p className="text-4xl mb-2">❌</p>
+                <p className="text-sm text-gray-400">{error}</p>
+              </>
+            ) : (
+              <>
+                <p className="text-4xl mb-2">🔍</p>
+                <p className="text-sm text-gray-400">
+                  Détection automatique en cours...
+                </p>
+              </>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

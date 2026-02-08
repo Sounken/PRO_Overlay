@@ -29,5 +29,29 @@
   "cache": {
     "enabled": true,
     "duration_days": 30
+  },
+  "team": {
+    "pokemon": [
+      {
+        "name": "gengar",
+        "slot": 1
+      },
+      {
+        "name": "gyarados",
+        "slot": 2
+      },
+      {
+        "name": "jolteon",
+        "slot": 3
+      }
+    ],
+    "active_pokemon": "gengar",
+    "team_region": {
+      "enabled": true,
+      "x": 2,
+      "y": 11,
+      "width": 186,
+      "height": 228
+    }
   }
 }

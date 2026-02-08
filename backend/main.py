@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import argparse
 
-from routes import ocr, pokemon, cache
+from routes import ocr, pokemon, cache, team
 
 app = FastAPI(
     title="PRO Helper API",
@@ -28,6 +28,7 @@ app.add_middleware(
 app.include_router(ocr.router, prefix="/ocr", tags=["OCR"])
 app.include_router(pokemon.router, prefix="/pokemon", tags=["Pokemon"])
 app.include_router(cache.router, prefix="/cache", tags=["Cache"])
+app.include_router(team.router, prefix="/team", tags=["Team"])
 
 
 @app.get("/")

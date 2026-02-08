@@ -8,7 +8,10 @@
       "Bash(dir:*)",
       "Bash(npm run build:electron:*)",
       "Bash(npm run:*)",
-      "Bash(python -m py_compile:*)"
+      "Bash(python -m py_compile:*)",
+      "Bash(python3:*)",
+      "Bash(curl:*)",
+      "Bash(pkill:*)"
     ]
   }
 }

@@ -98,3 +98,35 @@ class CacheStats(BaseModel):
     cache_size_mb: float
     oldest_entry: Optional[str] = None
     newest_entry: Optional[str] = None
+
+
+class TeamMember(BaseModel):
+    """Pokémon dans l'équipe du joueur"""
+    name: str  # Nom du Pokémon (anglais, minuscules)
+    slot: int  # Position 1-6
+
+
+class Team(BaseModel):
+    """Équipe du joueur"""
+    pokemon: List[TeamMember]  # Max 6
+    active_pokemon: Optional[str] = None
+
+
+class TeamRecommendationRequest(BaseModel):
+    """Requête de recommandation d'équipe"""
+    opponent_name: str
+    team: List[str]  # Array de noms de Pokémon
+    active_pokemon: Optional[str] = None
+
+
+class TeamRecommendationResponse(BaseModel):
+    """Réponse de recommandation d'équipe"""
+    recommended_pokemon: Optional[str] = None
+    show_recommendation: bool
+    reasoning: str
+
+
+class TeamDetectionResponse(BaseModel):
+    """Réponse de détection OCR d'équipe"""
+    detected_pokemon: List[Optional[str]]  # Liste de 6 noms ou None
+    count: int  # Nombre détecté avec succès

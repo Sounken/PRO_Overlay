@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import Dashboard from './components/Dashboard/Dashboard'
 import OverlayWindow from './components/Overlay/OverlayWindow'
 import RegionSelector from './components/RegionSelector/RegionSelector'
+import TeamRegionSelector from './components/TeamRegionSelector/TeamRegionSelector'
 
-type AppMode = 'dashboard' | 'overlay' | 'region-selector'
+type AppMode = 'dashboard' | 'overlay' | 'region-selector' | 'team-region-selector'
 
 function App() {
   const [mode, setMode] = useState<AppMode>('dashboard')
@@ -13,6 +14,7 @@ function App() {
       const hash = window.location.hash
       if (hash === '#overlay') setMode('overlay')
       else if (hash === '#region-selector') setMode('region-selector')
+      else if (hash === '#team-region-selector') setMode('team-region-selector')
       else setMode('dashboard')
     }
 
@@ -36,6 +38,8 @@ function App() {
       return <OverlayWindow />
     case 'region-selector':
       return <RegionSelector />
+    case 'team-region-selector':
+      return <TeamRegionSelector />
     default:
       return <Dashboard />
   }

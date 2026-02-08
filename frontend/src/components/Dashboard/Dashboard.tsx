@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Sidebar from './Sidebar'
 import Pokedex from './Pokedex'
+import Team from './Team'
 import Settings from './Settings'
 
 type View = 'pokedex' | 'team' | 'calculators' | 'settings'
@@ -13,11 +14,7 @@ function Dashboard() {
       case 'pokedex':
         return <Pokedex />
       case 'team':
-        return (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-gray-400 text-xl">Gestion d'équipe - À venir</p>
-          </div>
-        )
+        return <Team />
       case 'calculators':
         return (
           <div className="flex items-center justify-center h-full">

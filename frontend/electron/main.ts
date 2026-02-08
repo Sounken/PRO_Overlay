@@ -153,9 +153,9 @@ function createOverlayWindow(): void {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
 
-  // Dimensions de l'overlay (augmentées pour afficher les stats)
+  // Dimensions de l'overlay (augmentées pour afficher les stats + recommendation banner)
   const overlayWidth = 420;
-  const overlayHeight = 700;
+  const overlayHeight = 850;
 
   // Position en haut à droite avec 10% de marge (20% - 10% = 10%)
   // Puis on décale de +5% en bas
@@ -414,4 +414,118 @@ ipcMain.handle('set-auto-battle', (_event, enabled: boolean) => {
   config.overlay.autoBattle = enabled;
   writeConfig(config);
   return true;
+});
+
+/**
+ * Gestion d'équipe
+ */
+let teamRegionSelectorWindow: BrowserWindow | null = null;
+
+function createTeamRegionSelectorWindow(): void {
+  teamRegionSelectorWindow = new BrowserWindow({
+    fullscreen: true,
+    transparent: true,
+    frame: false,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    resizable: false,
+    fullscreenable: false,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js'),
+    },
+  });
+
+  const url = app.isPackaged
+    ? `file://${path.join(__dirname, '..', 'index.html')}#team-region-selector`
+    : `http://localhost:${FRONTEND_PORT}#team-region-selector`;
+
+  teamRegionSelectorWindow.loadURL(url);
+  teamRegionSelectorWindow.setAlwaysOnTop(true, 'screen-saver');
+
+  teamRegionSelectorWindow.on('closed', () => {
+    teamRegionSelectorWindow = null;
+  });
+}
+
+ipcMain.handle('get-team', () => {
+  const config = readConfig();
+  return config.team ?? { pokemon: [], active_pokemon: null, team_region: null };
+});
+
+ipcMain.handle('save-team', (_event, team: { pokemon: Array<{ name: string; slot: number }>; active_pokemon?: string }) => {
+  const config = readConfig();
+  if (!config.team) config.team = {};
+  config.team.pokemon = team.pokemon;
+  config.team.active_pokemon = team.active_pokemon ?? null;
+  writeConfig(config);
+  return true;
+});
+
+ipcMain.handle('add-team-member', (_event, name: string) => {
+  const config = readConfig();
+  if (!config.team) config.team = { pokemon: [], active_pokemon: null };
+
+  if (config.team.pokemon.length >= 6) {
+    return { success: false, error: 'Team is full (max 6)' };
+  }
+
+  const nextSlot = (config.team.pokemon || []).length + 1;
+  if (!config.team.pokemon) config.team.pokemon = [];
+  config.team.pokemon.push({ name, slot: nextSlot });
+  writeConfig(config);
+  return { success: true };
+});
+
+ipcMain.handle('remove-team-member', (_event, slot: number) => {
+  const config = readConfig();
+  if (!config.team || !config.team.pokemon) return true;
+
+  config.team.pokemon = config.team.pokemon.filter((p: any) => p.slot !== slot);
+  // Réordonner les slots
+  config.team.pokemon.forEach((p: any, idx: number) => {
+    p.slot = idx + 1;
+  });
+  writeConfig(config);
+  return true;
+});
+
+ipcMain.handle('set-active-pokemon', (_event, name: string) => {
+  const config = readConfig();
+  if (!config.team) config.team = {};
+  config.team.active_pokemon = name;
+  writeConfig(config);
+  return true;
+});
+
+ipcMain.handle('get-team-region', () => {
+  const config = readConfig();
+  return config.team?.team_region ?? null;
+});
+
+ipcMain.handle('save-team-region', (_event, region: { x: number; y: number; width: number; height: number }) => {
+  const config = readConfig();
+  const scaleFactor = screen.getPrimaryDisplay().scaleFactor;
+  if (!config.team) config.team = { pokemon: [], active_pokemon: null };
+  config.team.team_region = {
+    enabled: true,
+    x: Math.round(region.x * scaleFactor),
+    y: Math.round(region.y * scaleFactor),
+    width: Math.round(region.width * scaleFactor),
+    height: Math.round(region.height * scaleFactor),
+  };
+  writeConfig(config);
+  return true;
+});
+
+ipcMain.handle('open-team-region-selector', () => {
+  createTeamRegionSelectorWindow();
+});
+
+ipcMain.handle('close-team-region-selector', () => {
+  if (teamRegionSelectorWindow) {
+    teamRegionSelectorWindow.close();
+    teamRegionSelectorWindow = null;
+  }
 });

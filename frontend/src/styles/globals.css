@@ -26,3 +26,14 @@ body.overlay-mode {
   background: transparent !important;
   background-image: none !important;
 }
+
+/* Hide scrollbars while keeping scroll functionality */
+::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Firefox scrollbar hiding */
+* {
+  scrollbar-width: none;
+}
