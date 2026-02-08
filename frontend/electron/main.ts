@@ -323,29 +323,41 @@ app.on('ready', async () => {
 });
 
 /**
- * Avant la fermeture: tuer les processus backend
+ * Avant la fermeture: tuer les processus backend (dernière ligne de défense)
  */
 app.on('before-quit', () => {
-  console.log('Cleaning up before quit...');
+  console.log('[before-quit] Final cleanup...');
 
-  // Force kill all backend processes IMMEDIATELY
+  // Triple kill strategy
   try {
-    execSync('taskkill /F /IM backend.exe /T', { stdio: 'ignore' });
+    execSync('taskkill /F /IM backend.exe /T 2>nul', { stdio: 'ignore' });
+    console.log('[before-quit] ✅ Killed backend.exe');
   } catch {}
 
   try {
-    execSync('taskkill /F /IM python.exe /T', { stdio: 'ignore' });
+    execSync('taskkill /F /IM python.exe /T 2>nul', { stdio: 'ignore' });
+    console.log('[before-quit] ✅ Killed python.exe');
   } catch {}
 
-  if (backendProcess) {
+  // Also kill by port (netstat + taskkill)
+  try {
+    const output = execSync(`netstat -ano | findstr :${BACKEND_PORT}`, { encoding: 'utf-8', stdio: 'pipe' });
+    const match = output.match(/\s+(\d+)\s*$/m);
+    if (match) {
+      const pid = match[1];
+      execSync(`taskkill /F /PID ${pid} /T 2>nul`, { stdio: 'ignore' });
+      console.log(`[before-quit] ✅ Killed PID ${pid} on port ${BACKEND_PORT}`);
+    }
+  } catch {}
+
+  if (backendProcess?.pid) {
     try {
-      backendProcess.kill('SIGKILL');
+      process.kill(-backendProcess.pid); // Kill entire process group
+      console.log(`[before-quit] ✅ Killed process group ${backendProcess.pid}`);
     } catch {}
-    backendProcess = null;
   }
 
-  globalShortcut.unregisterAll();
-  console.log('✅ Cleanup complete');
+  console.log('[before-quit] ✅ Cleanup complete');
 });
 
 /**
@@ -369,6 +381,28 @@ app.on('activate', () => {
  */
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
+    // Kill backend BEFORE quitting
+    console.log('[window-all-closed] Killing backend processes...');
+    try {
+      execSync('taskkill /F /IM backend.exe /T 2>nul', { stdio: 'ignore' });
+      console.log('[window-all-closed] ✅ Killed backend.exe');
+    } catch {}
+
+    try {
+      execSync('taskkill /F /IM python.exe /T 2>nul', { stdio: 'ignore' });
+      console.log('[window-all-closed] ✅ Killed python.exe');
+    } catch {}
+
+    if (backendProcess?.pid) {
+      try {
+        backendProcess.kill('SIGKILL');
+        console.log('[window-all-closed] ✅ Killed backendProcess by PID');
+      } catch {}
+    }
+
+    globalShortcut.unregisterAll();
+
+    // Now quit
     app.quit();
   }
 });
