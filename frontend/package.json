@@ -1,7 +1,6 @@
 {
   "name": "pro-helper",
   "version": "1.0.0",
-  "type": "module",
   "description": "Pokemon Revolution Online Helper - Overlay & Dashboard",
   "main": "dist-electron/main.js",
   "author": "PRO Helper Team",

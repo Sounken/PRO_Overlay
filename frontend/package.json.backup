@@ -1,0 +1,5 @@
+# Backup - Original approach before ESM module wrapper
+# If ESM issues persist, consider:
+# 1. Removing "type": "module" from package.json
+# 2. Using .mjs extension for ESM files
+# 3. Using ts-node with CommonJS transpilation for dev mode

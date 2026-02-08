@@ -1,15 +1,9 @@
+// Import Electron modules - require() works best for CommonJS compatibility
+const { app, BrowserWindow, ipcMain, globalShortcut, screen, Menu } = require('electron');
 import { spawn, exec, ChildProcess, execSync } from 'child_process';
 import path from 'path';
 import fs from 'fs';
-import { fileURLToPath } from 'url';
 import type { BrowserWindow as BrowserWindowType } from 'electron';
-
-// Import electron modules - works with both CommonJS and ESM
-const electron: any = require('electron');
-const { app, BrowserWindow, ipcMain, globalShortcut, screen, Menu } = electron;
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 let backendProcess: ChildProcess | null = null;
 let dashboardWindow: BrowserWindowType | null = null;
