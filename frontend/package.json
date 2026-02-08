@@ -61,6 +61,10 @@
       {
         "from": "../backend/dist/backend.exe",
         "to": "backend/backend.exe"
+      },
+      {
+        "from": "../config.json",
+        "to": "config.json"
       }
     ]
   }

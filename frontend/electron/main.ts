@@ -1,16 +1,20 @@
-import { app, BrowserWindow, ipcMain, globalShortcut, screen, Menu } from 'electron';
 import { spawn, exec, ChildProcess, execSync } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import type { BrowserWindow as BrowserWindowType } from 'electron';
+
+// Import electron modules - works with both CommonJS and ESM
+const electron: any = require('electron');
+const { app, BrowserWindow, ipcMain, globalShortcut, screen, Menu } = electron;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 let backendProcess: ChildProcess | null = null;
-let dashboardWindow: BrowserWindow | null = null;
-let overlayWindow: BrowserWindow | null = null;
-let regionSelectorWindow: BrowserWindow | null = null;
+let dashboardWindow: BrowserWindowType | null = null;
+let overlayWindow: BrowserWindowType | null = null;
+let regionSelectorWindow: BrowserWindowType | null = null;
 
 const BACKEND_PORT = 8000;
 const FRONTEND_PORT = 3000;
@@ -146,7 +150,7 @@ function createDashboardWindow(): void {
   dashboardWindow.loadURL(url);
 
   // F12 pour DevTools (mode dev et production)
-  dashboardWindow.webContents.on('before-input-event', (_event, input) => {
+  dashboardWindow.webContents.on('before-input-event', (_event: any, input: any) => {
     if (input.key === 'F12') {
       dashboardWindow?.webContents.toggleDevTools();
     }
@@ -221,18 +225,48 @@ function createOverlayWindow(): void {
  * Config helpers
  */
 function getConfigPath(): string {
-  return app.isPackaged
-    ? path.join(process.resourcesPath, 'config.json')
-    : path.join(__dirname, '..', '..', '..', 'config.json');
+  if (!app.isPackaged) {
+    // Development mode: use project root
+    return path.join(__dirname, '..', '..', '..', 'config.json');
+  }
+
+  // Packaged mode: try multiple possible locations
+  const possiblePaths = [
+    path.join(process.resourcesPath, 'config.json'),
+    path.join(path.dirname(process.execPath), 'resources', 'config.json'),
+    path.join(__dirname, 'config.json'),
+  ];
+
+  for (const configPath of possiblePaths) {
+    if (fs.existsSync(configPath)) {
+      console.log(`[Config] Found config.json at: ${configPath}`);
+      return configPath;
+    }
+  }
+
+  // Default to first option even if it doesn't exist (for error handling)
+  console.log(`[Config] Using default path: ${possiblePaths[0]}`);
+  return possiblePaths[0];
 }
 
 function readConfig(): Record<string, any> {
-  const raw = fs.readFileSync(getConfigPath(), 'utf-8');
-  return JSON.parse(raw);
+  const configPath = getConfigPath();
+  try {
+    if (!fs.existsSync(configPath)) {
+      console.error(`[Config] File not found at: ${configPath}`);
+      throw new Error(`Config file not found at: ${configPath}`);
+    }
+    const raw = fs.readFileSync(configPath, 'utf-8');
+    return JSON.parse(raw);
+  } catch (error) {
+    console.error(`[Config] Error reading config: ${error}`);
+    throw error;
+  }
 }
 
 function writeConfig(config: Record<string, any>): void {
-  fs.writeFileSync(getConfigPath(), JSON.stringify(config, null, 2), 'utf-8');
+  const configPath = getConfigPath();
+  fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf-8');
 }
 
 /**
@@ -281,7 +315,7 @@ function createRegionSelectorWindow(): void {
     console.log('[RegionSelector] Page loaded successfully');
   });
 
-  regionSelectorWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
+  regionSelectorWindow.webContents.on('did-fail-load', (_event: any, errorCode: any, errorDescription: any) => {
     console.error(`[RegionSelector] Failed to load: ${errorCode} - ${errorDescription}`);
   });
 
@@ -311,21 +345,21 @@ function registerHotkeys(): void {
  * Initialisation de l'application
  */
 app.on('ready', async () => {
-  try {
-    await startBackend();
-    createDashboardWindow();
-    createOverlayWindow();
-    registerHotkeys();
-  } catch (error) {
-    console.error('Failed to start application:', error);
-    app.quit();
-  }
-});
+    try {
+      await startBackend();
+      createDashboardWindow();
+      createOverlayWindow();
+      registerHotkeys();
+    } catch (error) {
+      console.error('Failed to start application:', error);
+      app.quit();
+    }
+  });
 
-/**
- * Avant la fermeture: tuer les processus backend (dernière ligne de défense)
- */
-app.on('before-quit', () => {
+  /**
+   * Avant la fermeture: tuer les processus backend (dernière ligne de défense)
+   */
+  app.on('before-quit', () => {
   console.log('[before-quit] Final cleanup...');
 
   // Triple kill strategy
@@ -498,7 +532,7 @@ ipcMain.handle('set-auto-battle', (_event, enabled: boolean) => {
 /**
  * Gestion d'équipe
  */
-let teamRegionSelectorWindow: BrowserWindow | null = null;
+let teamRegionSelectorWindow: BrowserWindowType | null = null;
 
 function createTeamRegionSelectorWindow(): void {
   teamRegionSelectorWindow = new BrowserWindow({

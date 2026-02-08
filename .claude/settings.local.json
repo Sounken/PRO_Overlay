@@ -29,7 +29,24 @@
       "Bash(git add:*)",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nFix blank window issue and add release infrastructure\n\n## Changes:\n- Fixed tsconfig.preload.json output directory \\(dist/electron → dist-electron\\)\n- Fixed index.html loading paths for all windows \\(added dist/ to path\\)\n- Enabled DevTools in production mode \\(F12\\) for debugging\n- Added .gitignore for compiled exe/zip files\n- Created release scripts \\(create-portable-release.bat, build-and-release.bat\\)\n- Created installation guide and release documentation\n\n## Build System:\n- preload.js now compiles to correct directory\n- All windows load UI correctly from packaged asar\n- Application displays properly instead of blank window\n\n## Distribution:\n- Users get portable ZIP from GitHub Releases\n- No large binaries in Git repository\n- Clean installation process with RUN.bat launcher\n\nCo-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git push:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(if [ -f \"PROHelper/PROHelper.exe\" ])",
+      "Bash(then)",
+      "Bash(else)",
+      "Bash(fi:*)",
+      "Bash(python -m PyInstaller:*)",
+      "Bash(powershell:*)",
+      "Bash(timeout 15 cmd:*)",
+      "Bash(tasklist:*)",
+      "Bash(findstr:*)",
+      "Bash(cmd /c \"start /B RUN.bat > test_output.log 2>&1\")",
+      "Bash(timeout 10 ./PROHelper.exe:*)",
+      "Bash(start cmd /c \"RUN.bat > app_test_log.txt 2>&1\")",
+      "Bash(timeout 8 cmd /c:*)",
+      "Bash(test:*)",
+      "Bash(timeout:*)",
+      "Bash(python -c:*)",
+      "Bash(pip install:*)"
     ]
   }
 }

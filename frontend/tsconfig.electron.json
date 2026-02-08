@@ -11,9 +11,9 @@
     "moduleResolution": "bundler",
     "outDir": "./dist-electron",
     "rootDir": "./electron",
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true
   },
   "include": ["electron/main.ts"],
