@@ -323,29 +323,35 @@ app.on('ready', async () => {
 });
 
 /**
- * Fermeture propre
+ * Avant la fermeture: tuer les processus backend
  */
-app.on('quit', () => {
-  // Fermer le backend proprement
-  if (backendProcess) {
-    try {
-      backendProcess.kill('SIGTERM');
-      console.log('✅ Backend process terminated');
-    } catch (err) {
-      console.error('Error terminating backend:', err);
-      // Force kill if SIGTERM doesn't work
-      try {
-        execSync(`taskkill /F /PID ${backendProcess.pid}`);
-      } catch {}
-    }
-  }
+app.on('before-quit', () => {
+  console.log('Cleaning up before quit...');
 
-  // Nettoyer aussi les processus restants sur le port
+  // Force kill all backend processes IMMEDIATELY
   try {
-    execSync(`taskkill /F /IM backend.exe 2>nul || true`);
+    execSync('taskkill /F /IM backend.exe /T', { stdio: 'ignore' });
   } catch {}
 
+  try {
+    execSync('taskkill /F /IM python.exe /T', { stdio: 'ignore' });
+  } catch {}
+
+  if (backendProcess) {
+    try {
+      backendProcess.kill('SIGKILL');
+    } catch {}
+    backendProcess = null;
+  }
+
   globalShortcut.unregisterAll();
+  console.log('✅ Cleanup complete');
+});
+
+/**
+ * À la fermeture finale
+ */
+app.on('quit', () => {
   console.log('👋 Application closed');
 });
 
