@@ -221,7 +221,8 @@ function createOverlayWindow(): void {
 function getConfigPath(): string {
   if (!app.isPackaged) {
     // Development mode: use project root
-    return path.join(__dirname, '..', '..', '..', 'config.json');
+    // __dirname is dist-electron, so .. goes to frontend, .. goes to project root
+    return path.join(__dirname, '..', '..', 'config.json');
   }
 
   // Packaged mode: try multiple possible locations
