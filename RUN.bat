@@ -29,9 +29,10 @@ cd /d ..
 REM Wait for app to close
 timeout /t 2 /nobreak >nul
 
-REM Monitor and wait for PROHelper to close
+REM Monitor and wait for Electron process to close
+REM (PROHelper.exe is a wrapper, real process is electron.exe)
 :WAIT_FOR_APP
-tasklist /FI "IMAGENAME eq PROHelper.exe" 2>nul | find /I /N "PROHelper.exe" >nul
+tasklist /FI "IMAGENAME eq electron.exe" 2>nul | find /I /N "electron.exe" >nul
 if "%ERRORLEVEL%"=="0" (
     timeout /t 1 /nobreak >nul
     goto WAIT_FOR_APP
