@@ -368,6 +368,47 @@ app.on('quit', () => {
 });
 
 /**
+ * Helper: Kill all backend processes reliably
+ */
+function killBackendProcesses(): void {
+  console.log('[killBackendProcesses] Starting cleanup...');
+
+  // Try PowerShell first (most reliable on Windows)
+  try {
+    const psCmd = `Stop-Process -Name backend -Force -ErrorAction SilentlyContinue; Stop-Process -Name python -Force -ErrorAction SilentlyContinue`;
+    execSync(`powershell -NoProfile -Command "${psCmd}"`, { stdio: 'ignore', timeout: 5000 });
+    console.log('[killBackendProcesses] ✅ PowerShell killed processes');
+  } catch (err) {
+    console.log('[killBackendProcesses] PowerShell failed, trying taskkill');
+  }
+
+  // Fallback 1: taskkill backend.exe
+  try {
+    execSync('taskkill /F /IM backend.exe /T', { stdio: 'ignore', timeout: 5000 });
+    console.log('[killBackendProcesses] ✅ taskkill killed backend.exe');
+  } catch {}
+
+  // Fallback 2: taskkill python.exe
+  try {
+    execSync('taskkill /F /IM python.exe /T', { stdio: 'ignore', timeout: 5000 });
+    console.log('[killBackendProcesses] ✅ taskkill killed python.exe');
+  } catch {}
+
+  // Direct Node.js kill
+  if (backendProcess) {
+    try {
+      backendProcess.kill('SIGKILL');
+      console.log('[killBackendProcesses] ✅ Killed Node backendProcess');
+    } catch (err) {
+      console.log('[killBackendProcesses] Failed to kill backendProcess:', err);
+    }
+    backendProcess = null;
+  }
+
+  console.log('[killBackendProcesses] ✅ Cleanup complete');
+}
+
+/**
  * macOS: Re-créer la fenêtre si toutes sont fermées
  */
 app.on('activate', () => {
@@ -381,30 +422,20 @@ app.on('activate', () => {
  */
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
-    // Kill backend BEFORE quitting
-    console.log('[window-all-closed] Killing backend processes...');
-    try {
-      execSync('taskkill /F /IM backend.exe /T 2>nul', { stdio: 'ignore' });
-      console.log('[window-all-closed] ✅ Killed backend.exe');
-    } catch {}
-
-    try {
-      execSync('taskkill /F /IM python.exe /T 2>nul', { stdio: 'ignore' });
-      console.log('[window-all-closed] ✅ Killed python.exe');
-    } catch {}
-
-    if (backendProcess?.pid) {
-      try {
-        backendProcess.kill('SIGKILL');
-        console.log('[window-all-closed] ✅ Killed backendProcess by PID');
-      } catch {}
-    }
-
+    console.log('[window-all-closed] Closing all windows');
+    killBackendProcesses();
     globalShortcut.unregisterAll();
-
-    // Now quit
+    console.log('[window-all-closed] Calling app.quit()');
     app.quit();
   }
+});
+
+/**
+ * Final cleanup before quit
+ */
+app.on('before-quit', () => {
+  console.log('[before-quit] Final cleanup');
+  killBackendProcesses();
 });
 
 /**
