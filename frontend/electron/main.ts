@@ -1,6 +1,6 @@
 // Import Electron modules - require() works best for CommonJS compatibility
 const { app, BrowserWindow, ipcMain, globalShortcut, screen, Menu } = require('electron');
-import { spawn, exec, ChildProcess, execSync } from 'child_process';
+import { spawn, ChildProcess, execSync } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 import type { BrowserWindow as BrowserWindowType } from 'electron';
@@ -57,6 +57,9 @@ async function startBackend(): Promise<void> {
     }
   }
 
+  // Chemin du répertoire backend
+  const backendCwd = path.join(__dirname, '..', '..', 'backend');
+
   if (app.isPackaged) {
     // Mode packagé: lancer le exe directement
     backendProcess = spawn(backendPath, [], {
@@ -64,18 +67,11 @@ async function startBackend(): Promise<void> {
       detached: false, // Important: ne pas détacher le processus
     });
   } else {
-    // Mode développement: utiliser exec() qui gère mieux Windows
-    const backendCwd = path.join(__dirname, '..', '..', 'backend');
-    const pythonCmd = `"${pythonPath}" main.py --port ${BACKEND_PORT}`;
-
-    exec(pythonCmd, { cwd: backendCwd }, (error, stdout, stderr) => {
-      if (error && error.code !== 0) {
-        console.error(`[Backend] Error: ${error.message}`);
-      }
-      if (stdout) console.log(`[Backend] ${stdout}`);
-      if (stderr) console.error(`[Backend Error] ${stderr}`);
+    // Mode développement: utiliser spawn() pour une meilleure gestion du processus
+    backendProcess = spawn(pythonPath, ['main.py', '--port', String(BACKEND_PORT)], {
+      cwd: backendCwd,
+      stdio: ['ignore', 'pipe', 'pipe'], // Capture stdout et stderr
     });
-    return; // exec() ne retourne pas un ChildProcess au même titre, on skip les listeners
   }
 
   backendProcess?.stdout?.on('data', (data) => {
