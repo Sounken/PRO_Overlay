@@ -1,8 +1,8 @@
 """
-Moteur OCR avec PaddleOCR pour détecter les noms de Pokémon
-Utilise l'IA PaddleOCR de Baidu pour une meilleure reconnaissance
+Moteur OCR avec EasyOCR pour détecter les noms de Pokémon
+Utilise EasyOCR (basé sur PyTorch) pour une meilleure reconnaissance
 """
-from paddleocr import PaddleOCR
+import easyocr
 from PIL import Image
 import numpy as np
 import re
@@ -174,24 +174,23 @@ POKEMON_NAMES = sorted(list(set(POKEMON_NAMES)))
 
 
 class OCREngine:
-    """Moteur de reconnaissance de texte avec PaddleOCR pour détecter les Pokémon"""
+    """Moteur de reconnaissance de texte avec EasyOCR pour détecter les Pokémon"""
 
     def __init__(self, confidence_threshold: float = 0.25):
         """
-        Initialise le moteur OCR PaddleOCR
+        Initialise le moteur OCR EasyOCR
 
         Args:
             confidence_threshold: Seuil de confiance minimum (0.0-1.0)
         """
         self.confidence_threshold = confidence_threshold
-        # Initialiser PaddleOCR une seule fois (modèles IA préchargés)
-        # use_angle_cls=True détecte les textes en angle
-        # lang='en' pour l'anglais (noms Pokémon)
-        self.ocr = PaddleOCR(use_angle_cls=True, lang='en')
+        # Initialiser EasyOCR une seule fois (modèles PyTorch préchargés)
+        # Utilise automatiquement GPU si disponible, sinon CPU
+        self.ocr = easyocr.Reader(['en'], gpu=False)
 
     def extract_text(self, image: Image.Image) -> Tuple[str, float]:
         """
-        Extrait le texte d'une image avec PaddleOCR
+        Extrait le texte d'une image avec EasyOCR
 
         Args:
             image: Image PIL contenant le texte
@@ -199,31 +198,29 @@ class OCREngine:
         Returns:
             Tuple (texte détecté, niveau de confiance 0.0-1.0)
         """
-        # PaddleOCR fonctionne directement sur les images PIL
-        # Pas besoin de preprocessing avancé - PaddleOCR gère ça
-
-        # Conversion en numpy array pour PaddleOCR
+        # EasyOCR fonctionne directement sur les images PIL
+        # Conversion en numpy array pour EasyOCR
         image_array = np.array(image)
 
-        # Exécuter PaddleOCR
-        # Retourne: [[[x1,y1], [x2,y2], [x3,y3], [x4,y4]], (texte, confiance)], ...]
-        results = self.ocr.ocr(image_array, cls=True)
+        # Exécuter EasyOCR
+        # Retourne: [[[x1,y1], [x2,y2], [x3,y3], [x4,y4]], texte, confiance], ...]
+        results = self.ocr.readtext(image_array)
 
-        if not results or not results[0]:
+        if not results:
             return "", 0.0
 
         # Extraire le texte et la confiance de tous les résultats
         texts = []
         confidences = []
 
-        for line in results:
-            for word_info in line:
-                text = word_info[1][0].strip()  # Le texte reconnu
-                confidence = float(word_info[1][1])  # La confiance (0.0-1.0)
+        for detection in results:
+            _, text, confidence = detection
+            text = text.strip()  # Le texte reconnu
+            confidence = float(confidence)  # La confiance (0.0-1.0)
 
-                if text:
-                    texts.append(text)
-                    confidences.append(confidence)
+            if text:
+                texts.append(text)
+                confidences.append(confidence)
 
         if not texts:
             return "", 0.0

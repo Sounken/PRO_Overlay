@@ -2,10 +2,38 @@
 Pokemon Revolution Online Helper - Backend FastAPI
 Point d'entrée principal du serveur backend
 """
+import sys
+import os
+
+# Fix Windows console encoding for UTF-8 (required for EasyOCR progress bar)
+if sys.platform == 'win32':
+    os.environ['PYTHONIOENCODING'] = 'utf-8'
+    if sys.stdout:
+        sys.stdout.reconfigure(encoding='utf-8')
+    if sys.stderr:
+        sys.stderr.reconfigure(encoding='utf-8')
+
+# Fix Pillow 11.x compatibility - restore ANTIALIAS constant for EasyOCR
+# EasyOCR uses deprecated PIL.Image.ANTIALIAS which was removed in Pillow 11
+try:
+    from PIL import Image
+    if not hasattr(Image, 'ANTIALIAS'):
+        # ANTIALIAS was an alias for LANCZOS in older Pillow versions
+        Image.ANTIALIAS = Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else 1
+except Exception as e:
+    print(f"Warning: Could not patch PIL.Image.ANTIALIAS: {e}")
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import argparse
+import logging
+
+# Configure logging to display all debug info
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 from routes import ocr, pokemon, cache, team
 
