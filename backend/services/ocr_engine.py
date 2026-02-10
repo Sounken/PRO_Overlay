@@ -1,18 +1,13 @@
 """
-Moteur OCR avec Tesseract pour détecter les noms de Pokémon
+Moteur OCR avec PaddleOCR pour détecter les noms de Pokémon
+Utilise l'IA PaddleOCR de Baidu pour une meilleure reconnaissance
 """
-import pytesseract
+from paddleocr import PaddleOCR
 from PIL import Image
+import numpy as np
 import re
-import os
 from typing import Optional, Tuple
 from difflib import get_close_matches
-
-# Configuration du chemin Tesseract sur Windows
-if os.name == 'nt':  # Windows
-    tesseract_path = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-    if os.path.exists(tesseract_path):
-        pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
 # Liste COMPLÈTE des noms de Pokémon (Gen 1-9, 1025 Pokémon)
 POKEMON_NAMES = [
@@ -179,96 +174,56 @@ POKEMON_NAMES = sorted(list(set(POKEMON_NAMES)))
 
 
 class OCREngine:
-    """Moteur de reconnaissance de texte pour détecter les Pokémon"""
+    """Moteur de reconnaissance de texte avec PaddleOCR pour détecter les Pokémon"""
 
-    def __init__(self, confidence_threshold: int = 60):
+    def __init__(self, confidence_threshold: float = 0.25):
         """
-        Initialise le moteur OCR
+        Initialise le moteur OCR PaddleOCR
 
         Args:
-            confidence_threshold: Seuil de confiance minimum (0-100)
+            confidence_threshold: Seuil de confiance minimum (0.0-1.0)
         """
         self.confidence_threshold = confidence_threshold
-
-        # Configuration Tesseract optimisée pour jeux vidéo
-        # PSM 11 = texte épars sans structure particulière
-        # --oem 3 = LSTM + Legacy (meilleur pour texte stylisé)
-        self.config = '--psm 11 --oem 3'
-
-    def preprocess_image(self, image: Image.Image) -> Image.Image:
-        """
-        Prétraitement de l'image pour améliorer l'OCR sur jeux vidéo avec fonts stylisées
-
-        Args:
-            image: Image PIL à traiter
-
-        Returns:
-            Image prétraitée
-        """
-        from PIL import ImageEnhance, ImageFilter
-
-        # Agrandissement 5x pour meilleure reconnaissance des fonts petites/stylisées
-        width, height = image.size
-        image = image.resize((width * 5, height * 5), Image.Resampling.LANCZOS)
-
-        # Conversion en RGB si nécessaire
-        if image.mode != 'RGB':
-            image = image.convert('RGB')
-
-        # Augmentation TRÈS forte du contraste pour fonts stylisées
-        enhancer = ImageEnhance.Contrast(image)
-        image = enhancer.enhance(4.0)
-
-        # Augmentation de la saturation
-        color_enhancer = ImageEnhance.Color(image)
-        image = color_enhancer.enhance(2.0)
-
-        # Augmentation TRÈS forte de la netteté pour fonts complexes
-        sharpness_enhancer = ImageEnhance.Sharpness(image)
-        image = sharpness_enhancer.enhance(4.0)
-
-        # Augmentation de la luminosité
-        brightness_enhancer = ImageEnhance.Brightness(image)
-        image = brightness_enhancer.enhance(1.3)
-
-        # Appliquer un filtre de réduction de bruit
-        image = image.filter(ImageFilter.MedianFilter(size=3))
-
-        # Appliquer un filtre de netteté supplémentaire
-        image = image.filter(ImageFilter.SHARPEN)
-
-        return image
+        # Initialiser PaddleOCR une seule fois (modèles IA préchargés)
+        # use_angle_cls=True détecte les textes en angle
+        # lang='en' pour l'anglais (noms Pokémon)
+        self.ocr = PaddleOCR(use_angle_cls=True, lang='en')
 
     def extract_text(self, image: Image.Image) -> Tuple[str, float]:
         """
-        Extrait le texte d'une image
+        Extrait le texte d'une image avec PaddleOCR
 
         Args:
             image: Image PIL contenant le texte
 
         Returns:
-            Tuple (texte détecté, niveau de confiance 0-100)
+            Tuple (texte détecté, niveau de confiance 0.0-1.0)
         """
-        # Prétraitement
-        processed_image = self.preprocess_image(image)
+        # PaddleOCR fonctionne directement sur les images PIL
+        # Pas besoin de preprocessing avancé - PaddleOCR gère ça
 
-        # Extraction OCR avec données de confiance
-        data = pytesseract.image_to_data(
-            processed_image,
-            config=self.config,
-            output_type=pytesseract.Output.DICT
-        )
+        # Conversion en numpy array pour PaddleOCR
+        image_array = np.array(image)
 
-        # Récupère le texte et la confiance
+        # Exécuter PaddleOCR
+        # Retourne: [[[x1,y1], [x2,y2], [x3,y3], [x4,y4]], (texte, confiance)], ...]
+        results = self.ocr.ocr(image_array, cls=True)
+
+        if not results or not results[0]:
+            return "", 0.0
+
+        # Extraire le texte et la confiance de tous les résultats
         texts = []
         confidences = []
 
-        for i, conf in enumerate(data['conf']):
-            if int(conf) > 0:  # Ignorer les détections sans confiance
-                text = data['text'][i].strip()
+        for line in results:
+            for word_info in line:
+                text = word_info[1][0].strip()  # Le texte reconnu
+                confidence = float(word_info[1][1])  # La confiance (0.0-1.0)
+
                 if text:
                     texts.append(text)
-                    confidences.append(int(conf))
+                    confidences.append(confidence)
 
         if not texts:
             return "", 0.0
