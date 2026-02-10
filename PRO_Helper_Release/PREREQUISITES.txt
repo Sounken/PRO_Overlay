@@ -1,0 +1,138 @@
+================================================================================
+                    PRÉREQUIS - PRO HELPER v1.0.2
+================================================================================
+
+Avant de lancer l'application, vérifiez que vous avez:
+
+================================================================================
+SYSTÈME MINIMUM (REQUIS)
+================================================================================
+
+✓ Windows 10 ou Windows 11 (64-bit)
+✓ 500 MB d'espace disque libre
+✓ Résolution 1920x1080 ou plus (recommandé)
+
+================================================================================
+DÉPENDANCES À INSTALLER (TRÈS IMPORTANT!)
+================================================================================
+
+🔴 OBLIGATOIRE: Visual C++ Redistributable 2019 (x64)
+
+   Si vous n'avez PAS d'erreur, vous l'avez peut-être déjà.
+
+   Comment installer:
+
+   Option 1 - Automatique (RECOMMANDÉ):
+   1. Double-cliquez sur: INSTALL_PREREQUISITES.bat
+   2. Acceptez les demandes d'installation
+   3. Redémarrez l'ordinateur (recommandé)
+   4. Lancez RUN.bat
+
+   Option 2 - Manuel:
+   1. Visitez: https://support.microsoft.com/en-us/help/2977003
+   2. Téléchargez: "Visual C++ Redistributable for Visual Studio 2019"
+   3. Choisissez la version "x64" (pour processeur 64-bit)
+   4. Exécutez le fichier .exe
+   5. Redémarrez l'ordinateur
+   6. Lancez RUN.bat
+
+🟢 OPTIONNEL (recommandé):
+   - .NET Framework 4.5+ (pour certaines fonctionnalités avancées)
+   - Connexion Internet (pour télécharger les modèles AI au premier lancement)
+
+================================================================================
+VÉRIFICATION AVANT DE LANCER
+================================================================================
+
+Avant de cliquer sur RUN.bat, vérifiez:
+
+□ 1. Visual C++ Redistributable est installé
+      Méthode rapide: Exécutez INSTALL_PREREQUISITES.bat
+
+□ 2. Tous les fichiers sont présents:
+      - PROHelper.exe (169 MB)
+      - backend/backend.exe (246 MB)
+      - ffmpeg.dll (2.8 MB)
+      - config.json
+      - ressources/ (dossier)
+
+□ 3. Vous avez 500 MB d'espace libre
+      Clic-droit sur le dossier → Propriétés → voir la taille
+
+□ 4. L'extraction est complète
+      Si vous avez téléchargé un ZIP, assurez-vous de l'avoir totalement extrait
+
+================================================================================
+SI L'APPLICATION NE DÉMARRE PAS
+================================================================================
+
+Symptôme: Rien ne se passe en cliquant RUN.bat ou PROHelper.exe
+
+Solution 1 - Prérequis manquants (PLUS COURANT):
+   Exécutez: INSTALL_PREREQUISITES.bat
+   Redémarrez l'ordinateur
+   Essayez à nouveau
+
+Solution 2 - Dossier incomplet:
+   Vérifiez que TOUS les fichiers sont présents:
+   - PROHelper.exe doit faire ~169 MB
+   - backend/backend.exe doit faire ~246 MB
+   - ffmpeg.dll doit faire ~2.8 MB
+   Si des fichiers manquent, téléchargez le package complet
+
+Solution 3 - Problème de permissions:
+   Clic-droit sur RUN.bat → "Exécuter en tant qu'administrateur"
+
+Solution 4 - Vérifier les erreurs:
+   Lorsque vous lancez RUN.bat, il affichera des messages d'erreur
+   Lisez-les attentivement pour comprendre le problème
+
+================================================================================
+PREMIÈRE UTILISATION
+================================================================================
+
+Après avoir lancé l'application:
+
+1. La fenêtre PROHelper va s'ouvrir
+2. À la PREMIÈRE utilisation SEULEMENT:
+   - L'application va télécharger les modèles AI (~300 MB)
+   - Cela peut prendre 1-2 minutes
+   - Une fenêtre de console peut apparaître (c'est normal)
+
+3. Après le téléchargement:
+   - L'interface se charge
+   - Un écran de configuration OCR apparaît
+   - Suivez les instructions pour sélectionner la zone à scanner
+
+4. C'est prêt! Lancez Pokémon Revolution Online et testez
+
+================================================================================
+AIDE SUPPLÉMENTAIRE
+================================================================================
+
+Lisez les fichiers:
+- README.md       → Guide complet d'utilisation
+- INFO.txt        → Informations techniques
+- DEPLOYMENT.md   → Guide de déploiement
+- QUICK_START.md  → Démarrage rapide
+
+Erreur spécifique? Vérifiez:
+1. Que Visual C++ Redistributable est installé
+2. Que vous avez 500 MB libres
+3. Que tous les fichiers sont là
+4. Que vous utilisez Windows 10/11 64-bit
+
+================================================================================
+RÉSUMÉ RAPIDE
+================================================================================
+
+Pour utiliser l'application:
+
+1. Exécutez INSTALL_PREREQUISITES.bat  ← FAIRE D'ABORD!
+2. Redémarrez l'ordinateur (recommandé)
+3. Double-cliquez RUN.bat
+4. Laissez les modèles se télécharger (~2 minutes)
+5. Configurez la zone OCR
+6. Lancez le jeu et appuyez sur F9!
+
+================================================================================
