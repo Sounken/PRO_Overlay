@@ -9,10 +9,10 @@
     "confidence_threshold": 40,
     "region": {
       "enabled": true,
-      "x": 794,
-      "y": 474,
-      "width": 276,
-      "height": 144
+      "x": 770,
+      "y": 419,
+      "width": 295,
+      "height": 137
     }
   },
   "overlay": {

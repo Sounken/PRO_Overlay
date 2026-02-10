@@ -48,7 +48,19 @@
       "Bash(python -c:*)",
       "Bash(pip install:*)",
       "Bash(du -sh:*)",
-      "Bash(du:*)"
+      "Bash(du:*)",
+      "Bash(pip uninstall:*)",
+      "Bash(npm ls:*)",
+      "Bash(1 curl -s -X POST http://localhost:8000/ocr/debug -H \"Content-Type: application/json\" -d \"{}\")",
+      "Bash(1 curl -s http://localhost:8000/pokemon/1)",
+      "Bash(netstat:*)",
+      "Bash(pip show:*)",
+      "Bash(sleep 5 curl -s -X POST http://localhost:8000/ocr/debug -H \"Content-Type: application/json\" -d \"{}\")",
+      "Bash(python << 'EOF'\nimport os\nimport subprocess\ntry:\n    subprocess.run\\(['taskkill', '/PID', '17344', '/F'], check=True\\)\n    print\\(\"Process killed\"\\)\nexcept Exception as e:\n    print\\(f\"Error: {e}\"\\)\nEOF)",
+      "Bash(for i in:*)",
+      "Bash(do)",
+      "Bash(echo:*)",
+      "Bash(done)"
     ]
   }
 }

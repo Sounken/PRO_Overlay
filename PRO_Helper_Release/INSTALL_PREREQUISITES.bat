@@ -7,6 +7,9 @@ REM =========================================================
 
 setlocal enabledelayedexpansion
 
+REM Change to script directory
+cd /d "%~dp0"
+
 echo.
 echo =========================================================
 echo  PRO Helper - Installation des Prérequis

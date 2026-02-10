@@ -4,6 +4,9 @@ REM Lance l'application PROHelper avec vérifications de prérequis
 
 setlocal enabledelayedexpansion
 
+REM Change to script directory to ensure relative paths work
+cd /d "%~dp0"
+
 echo.
 echo =========================================================
 echo  PRO Helper - Pokémon Helper Tool
@@ -86,14 +89,23 @@ echo  Lancement de l'application...
 echo =========================================================
 echo.
 
-REM Lancer l'application
-start "" "PROHelper.exe"
+REM Lancer l'application depuis le répertoire courant
+REM Utiliser /min pour éviter la console, /wait pour attendre le démarrage
+set APP_PATH=%CD%\PROHelper.exe
+echo Chemin: %APP_PATH%
+echo.
 
-REM Attendre un peu pour que l'app démarre
-timeout /t 3 /nobreak
+REM Lancer l'exe et attendre qu'il démarre
+start "" /B "%APP_PATH%"
+
+REM Attendre plus longtemps pour que Electron démarre et se charge
+echo Attente du démarrage de l'application...
+timeout /t 5 /nobreak
 
 echo.
-echo ✓ Application lancée avec succès!
+echo =========================================================
+echo  Informations:
+echo =========================================================
 echo.
 echo Contrôles:
 echo  - F9:   Basculer l'overlay en jeu
@@ -102,8 +114,15 @@ echo  - ESC:  Quitter l'application
 echo.
 echo À la première utilisation:
 echo  - Les modèles AI vont être téléchargés (~1-2 minutes)
-echo  - Une zone de détection OCR sera configurée
+echo  - L'application va créer la cache locale
 echo.
 echo Pour plus d'aide, lisez README.md
+echo.
+echo =========================================================
+echo.
+echo Si l'application ne démarre pas:
+echo  1. Vérifiez l'espace disque (500 MB minimum requis)
+echo  2. Lancez INSTALL_PREREQUISITES.bat
+echo  3. Redémarrez votre ordinateur
 echo.
 echo =========================================================
