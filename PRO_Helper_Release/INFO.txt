@@ -1,0 +1,109 @@
+================================================================================
+                    PRO HELPER v1.0.2 - APPLICATION PRÊTE
+================================================================================
+
+DOSSIER D'INSTALLATION: C:\Users\Damien\Documents\ProjetPerso\PRO_Overlay\PRO_Helper_Release\
+
+FICHIERS PRÉSENTS:
+  ✓ PROHelper.exe (169 MB) - Application principale (Electron)
+  ✓ backend/backend.exe (246 MB) - Moteur OCR EasyOCR (dernière version)
+  ✓ config.json - Fichier de configuration
+  ✓ RUN.bat - Script de lancement simple
+  ✓ README.md - Documentation complète
+
+TAILLE TOTALE: ~415 MB (tout compris, prêt à utiliser)
+
+================================================================================
+PRÉREQUIS SYSTÈME
+================================================================================
+
+✓ Windows 10 ou Windows 11
+✓ 500 MB d'espace disque libre (pour les modèles AI)
+✓ Résolution 1920x1080 ou plus (recommandé)
+
+⚠️ AUCUNE installation supplémentaire requise!
+   Pas de Tesseract, pas de Python, rien à installer!
+
+================================================================================
+UTILISATION
+================================================================================
+
+1. LANCER L'APPLICATION:
+   - Double-cliquez sur RUN.bat
+   - OU exécutez PROHelper.exe directement
+
+2. PREMIÈRE UTILISATION:
+   - Les modèles AI vont se télécharger (~1-2 minutes)
+   - L'application va créer le cache local
+
+3. EN JEU:
+   - Appuyez sur F9 pour activer l'overlay
+   - L'OCR détectera les noms des Pokémon
+   - Suivez les conseils de changement de Pokémon
+
+================================================================================
+AMÉLIORATIONS RÉCENTES (v1.0.2)
+================================================================================
+
+✓ Migration Tesseract → EasyOCR (meilleure reconnaissance AI)
+✓ Preprocessing d'image avancé (contraste +50%, netteté +100%)
+✓ Détection stricte des Pokémon (seuil de confiance 50%)
+✓ Correction de compatibilité Pillow 11.x
+✓ Support Windows 10/11 complètement autonome
+
+================================================================================
+STRUCTURE DU DOSSIER
+================================================================================
+
+PRO_Helper_Release/
+├── PROHelper.exe           [Application principale]
+├── backend/
+│   └── backend.exe         [Moteur OCR EasyOCR 246MB]
+├── config.json             [Configuration utilisateur]
+├── RUN.bat                 [Script de lancement]
+├── README.md               [Documentation détaillée]
+└── INFO.txt                [Ce fichier]
+
+================================================================================
+NOTES IMPORTANTES
+================================================================================
+
+1. PAS DE MODIFICATIONS SYSTÈME:
+   L'application n'affecte pas le reste du système
+   Aucun enregistrement Windows
+   Aucun fichier dans Program Files requis
+
+2. MODÈLES AI:
+   Téléchargés au premier lancement (~300 MB)
+   Cachés localement après (pas de re-téléchargement)
+   Inclus dans le dossier de l'application
+
+3. PORTABILITÉ:
+   Vous pouvez déplacer ce dossier partout
+   Vous pouvez le copier sur une clé USB
+   Aucune dépendance système externe
+
+4. CONFIDENTIALITÉ:
+   L'application ne contacte que pour télécharger les modèles IA
+   Aucune donnée utilisateur n'est envoyée
+   Tout fonctionne localement
+
+================================================================================
+SUPPORT TECHNIQUE
+================================================================================
+
+Si vous avez des problèmes:
+
+1. Vérifiez que vous avez 500 MB d'espace
+2. Relancez RUN.bat
+3. Appuyez sur F12 pour voir les logs
+4. Vérifiez la configuration de la zone OCR
+
+================================================================================
+PRÊT À UTILISER!
+================================================================================
+
+Pour démarrer: Double-cliquez sur RUN.bat
+Pour plus d'infos: Lisez README.md
+
+Bon jeu sur Pokémon Revolution Online! 🎮
