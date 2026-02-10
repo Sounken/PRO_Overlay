@@ -3,8 +3,9 @@ Moteur OCR avec EasyOCR pour détecter les noms de Pokémon
 Utilise EasyOCR (basé sur PyTorch) pour une meilleure reconnaissance
 """
 import easyocr
-from PIL import Image
+from PIL import Image, ImageEnhance
 import numpy as np
+import cv2
 import re
 from typing import Optional, Tuple
 from difflib import get_close_matches
@@ -188,6 +189,48 @@ class OCREngine:
         # Utilise automatiquement GPU si disponible, sinon CPU
         self.ocr = easyocr.Reader(['en'], gpu=False)
 
+    def preprocess_image(self, image: Image.Image) -> np.ndarray:
+        """
+        Prétraite l'image pour améliorer la détection OCR
+
+        Stratégies:
+        1. Augmente le contraste pour clarifier le texte
+        2. Applique une netteté pour améliorer les bords
+        3. Augmente la saturation si nécessaire
+        4. Convertit en array numpy pour EasyOCR
+
+        Args:
+            image: Image PIL
+
+        Returns:
+            Image prétraitée en array numpy
+        """
+        # Augmenter le contraste (important pour les jeux vidéo)
+        contrast_enhancer = ImageEnhance.Contrast(image)
+        image = contrast_enhancer.enhance(1.5)  # +50% contraste
+
+        # Augmenter la netteté
+        sharpness_enhancer = ImageEnhance.Sharpness(image)
+        image = sharpness_enhancer.enhance(2.0)  # +100% netteté
+
+        # Augmenter légèrement la luminosité
+        brightness_enhancer = ImageEnhance.Brightness(image)
+        image = brightness_enhancer.enhance(1.1)  # +10% luminosité
+
+        # Convertir en array numpy (BGR pour OpenCV)
+        image_cv = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+
+        # Appliquer une légère augmentation de contraste via histogram equalization
+        lab = cv2.cvtColor(image_cv, cv2.COLOR_BGR2LAB)
+        l, a, b = cv2.split(lab)
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+        l = clahe.apply(l)
+        lab = cv2.merge([l, a, b])
+        image_cv = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
+
+        # Convertir back to RGB pour EasyOCR
+        return cv2.cvtColor(image_cv, cv2.COLOR_BGR2RGB)
+
     def extract_text(self, image: Image.Image) -> Tuple[str, float]:
         """
         Extrait le texte d'une image avec EasyOCR
@@ -198,9 +241,8 @@ class OCREngine:
         Returns:
             Tuple (texte détecté, niveau de confiance 0.0-1.0)
         """
-        # EasyOCR fonctionne directement sur les images PIL
-        # Conversion en numpy array pour EasyOCR
-        image_array = np.array(image)
+        # Prétraiter l'image pour améliorer la détection
+        image_array = self.preprocess_image(image)
 
         # Exécuter EasyOCR
         # Retourne: [[[x1,y1], [x2,y2], [x3,y3], [x4,y4]], texte, confiance], ...]
@@ -254,7 +296,7 @@ class OCREngine:
 
     def find_closest_pokemon(self, detected_name: str) -> Optional[str]:
         """
-        Trouve le Pokémon le plus proche du nom détecté
+        Trouve le Pokémon le plus proche du nom détecté avec strict validation
 
         Args:
             detected_name: Nom détecté par l'OCR
@@ -264,35 +306,37 @@ class OCREngine:
         """
         detected_name = self.clean_pokemon_name(detected_name)
 
-        if not detected_name:
+        if not detected_name or len(detected_name) < 2:
             return None
 
-        # Recherche exacte sur la chaîne complète
+        # PREMIÈRE PASSE: Recherche exacte sur la chaîne complète (plus fiable)
         if detected_name in POKEMON_NAMES:
             return detected_name
 
-        # Recherche approximative sur la chaîne complète (cutoff plus strict)
-        matches = get_close_matches(detected_name, POKEMON_NAMES, n=1, cutoff=0.75)
-        if matches:
-            return matches[0]
+        # DEUXIÈME PASSE: Chercher mot par mot (meilleur pour détecter les vrais noms)
+        words = [w for w in detected_name.split() if len(w) >= 2]
 
-        # Chercher mot par mot (meilleur pour détecter les vrais noms)
-        words = detected_name.split()
-
-        # PREMIÈRE PASSE: Chercher les matches EXACTS (y compris les noms courts comme "mew", "muk")
+        # Chercher les matches EXACTS (y compris les noms courts comme "mew", "muk")
         for word in words:
-            if len(word) >= 2 and word in POKEMON_NAMES:
+            if word in POKEMON_NAMES:
                 return word
 
-        # DEUXIÈME PASSE: Fuzzy matching seulement pour les mots assez longs (>= 4 chars)
-        # Cela évite les faux positifs comme "see" qui matche "seel"
+        # TROISIÈME PASSE: Fuzzy matching seulement pour les mots assez longs (>= 5 chars)
+        # Cutoff très strict (0.92+) pour éviter les faux positifs
+        for word in words:
+            if len(word) < 5:
+                continue
+
+            word_matches = get_close_matches(word, POKEMON_NAMES, n=1, cutoff=0.92)
+            if word_matches:
+                return word_matches[0]
+
+        # QUATRIÈME PASSE: Fallback avec cutoff moins strict (0.85+) mais seulement pour mots >= 4 chars
         for word in words:
             if len(word) < 4:
                 continue
 
-            # Cutoff TRÈS strict (0.90+) pour éviter les faux positifs
-            # "see" vs "seel" ≈ 0.857, donc 0.90 l'exclut
-            word_matches = get_close_matches(word, POKEMON_NAMES, n=1, cutoff=0.90)
+            word_matches = get_close_matches(word, POKEMON_NAMES, n=1, cutoff=0.85)
             if word_matches:
                 return word_matches[0]
 

@@ -12,7 +12,7 @@ from services import ScreenCapture, OCREngine
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-ocr_engine = OCREngine(confidence_threshold=25)  # Seuil bas pour jeux vidéo
+ocr_engine = OCREngine(confidence_threshold=0.50)  # 50% de confiance minimum (strict mais pas trop)
 
 
 @router.post("/detect", response_model=OCRDetectionResponse)
