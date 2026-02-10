@@ -46,7 +46,9 @@
       "Bash(test:*)",
       "Bash(timeout:*)",
       "Bash(python -c:*)",
-      "Bash(pip install:*)"
+      "Bash(pip install:*)",
+      "Bash(du -sh:*)",
+      "Bash(du:*)"
     ]
   }
 }

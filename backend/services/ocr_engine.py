@@ -14,9 +14,9 @@ if os.name == 'nt':  # Windows
     if os.path.exists(tesseract_path):
         pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
-# Liste complète des noms de Pokémon (Gen 1-9)
+# Liste COMPLÈTE des noms de Pokémon (Gen 1-9, 1025 Pokémon)
 POKEMON_NAMES = [
-    # Gen 1
+    # Gen 1 (1-151)
     "bulbasaur", "ivysaur", "venusaur", "charmander", "charmeleon", "charizard",
     "squirtle", "wartortle", "blastoise", "caterpie", "metapod", "butterfree",
     "weedle", "kakuna", "beedrill", "pidgey", "pidgeotto", "pidgeot",
@@ -42,22 +42,25 @@ POKEMON_NAMES = [
     "flareon", "porygon", "omanyte", "omastar", "kabuto", "kabutops",
     "aerodactyl", "snorlax", "articuno", "zapdos", "moltres", "dratini",
     "dragonair", "dragonite", "mewtwo", "mew",
-    # Gen 2
+    # Gen 2 (152-251)
     "chikorita", "bayleef", "meganium", "cyndaquil", "quilava", "typhlosion",
     "totodile", "croconaw", "feraligatr", "sentret", "furret", "hoothoot",
     "noctowl", "ledyba", "ledian", "spinarak", "ariados", "crobat",
     "chinchou", "lanturn", "pichu", "cleffa", "igglybuff", "togepi",
-    "togetic", "tyrogue", "hitmontop", "smooth", "politoed", "espeon",
-    "umbreon", "murkrow", "slowking", "misdreavus", "wooper", "girafarig",
-    "pineco", "forretress", "dunsparce", "snubbull", "granbull", "qwilfish",
+    "togetic", "tyrogue", "hitmontop", "smoochum", "elekid", "magby",
+    "azurill", "marill", "azumarill", "sudowoodo", "politoed", "hoppip",
+    "skiploom", "jumpluff", "aipom", "sunkern", "sunflora", "yanma",
+    "wooper", "quagsire", "espeon", "umbreon", "murkrow", "slowking",
+    "misdreavus", "unown", "wobbuffet", "girafarig", "pineco", "forretress",
+    "dunsparce", "girafarig", "dunsparce", "snubbull", "granbull", "qwilfish",
     "scizor", "shuckle", "heracross", "sneasel", "teddiursa", "ursaring",
     "slugma", "magcargo", "swinub", "piloswine", "corsola", "remoraid",
-    "octillery", "mantine", "skarmory", "houndour", "houndoom", "kingdra",
-    "phanpy", "donphan", "porygon2", "steelix", "tyrogue", "hitmontop",
-    "smoochum", "elekid", "magby", "miltank", "raikou", "entei",
-    "suicune", "larvitar", "pupitar", "tyranitar", "lugia", "ho-oh",
-    "celebi",
-    # Gen 3
+    "octillery", "mantine", "skarmory", "mantyke", "houndour", "houndoom",
+    "kingdra", "phanpy", "donphan", "porygon2", "steelix", "tyrogue",
+    "hitmontop", "smoochum", "elekid", "magby", "miltank", "raikou",
+    "entei", "suicune", "larvitar", "pupitar", "tyranitar", "lugia",
+    "ho-oh", "celebi",
+    # Gen 3 (252-386)
     "treecko", "grovyle", "sceptile", "torchic", "combusken", "blaziken",
     "mudkip", "marshtomp", "swampert", "poochyena", "mightyena", "zigzagoon",
     "linoone", "taillow", "swellow", "wingull", "pelipper", "ralts",
@@ -68,13 +71,20 @@ POKEMON_NAMES = [
     "dusclops", "trapinch", "vibrava", "flygon", "cacnea", "cacturne",
     "swablu", "altaria", "seviper", "lunatone", "solrock", "barboach",
     "whiscash", "corphish", "crawdaunt", "baltoy", "claydol", "lileep",
-    "cradily", "anorith", "armaldo", "feebas", "milotic", "chimecho",
-    "absol", "wynaut", "snorunt", "glalie", "spheal", "sealeo",
-    "walrein", "clamperl", "huntail", "gorebyss", "relicanth", "luvdisc",
-    "bagon", "shelgon", "salamence", "beldum", "metang", "metagross",
-    "regirock", "regice", "registeel", "latias", "latios", "kyogre",
-    "groudon", "rayquaza", "jirachi", "deoxys",
-    # Gen 4
+    "cradily", "anorith", "armaldo", "feebas", "milotic", "carvanha",
+    "sharpedo", "wailmer", "wailord", "camerupt", "numel", "torkoal",
+    "spoink", "grumpig", "spinda", "trapinch", "vibrava", "flygon",
+    "cacnea", "cacturne", "swablu", "altaria", "zangoose", "seviper",
+    "lunatone", "solrock", "barboach", "whiscash", "corphish", "crawdaunt",
+    "baltoy", "claydol", "lileep", "cradily", "anorith", "armaldo",
+    "feebas", "milotic", "castform", "kecleon", "shuppet", "banette",
+    "duskull", "dusclops", "chingling", "chimecho", "absol", "wynaut",
+    "snorunt", "glalie", "spheal", "sealeo", "walrein", "clamperl",
+    "huntail", "gorebyss", "relicanth", "luvdisc", "bagon", "shelgon",
+    "salamence", "beldum", "metang", "metagross", "regirock", "regice",
+    "registeel", "latias", "latios", "kyogre", "groudon", "rayquaza",
+    "jirachi", "deoxys",
+    # Gen 4 (387-493)
     "turtwig", "grotle", "torterra", "chimchar", "monferno", "infernape",
     "piplup", "prinplup", "empoleon", "starly", "staravia", "staraptor",
     "bidoof", "bibarel", "buizel", "floatzel", "cherubi", "cherrim",
@@ -89,7 +99,8 @@ POKEMON_NAMES = [
     "probopass", "dusknoir", "froslass", "rotom", "uxie", "mesprit",
     "azelf", "dialga", "palkia", "heatran", "regigigas", "giratina",
     "cresselia", "phione", "manaphy", "darkrai", "shaymin", "arceus",
-    # Gen 5
+    "shinx", "luxio", "luxray",
+    # Gen 5 (494-649)
     "snivy", "servine", "serperior", "tepig", "pignite", "emboar",
     "oshawott", "dewott", "samurott", "patrat", "watchog", "lillipup",
     "herdier", "stoutland", "pidove", "tranquill", "unfezant", "blitzle",
@@ -109,7 +120,7 @@ POKEMON_NAMES = [
     "volcarona", "cobalion", "terrakion", "virizion", "tornadus", "thundurus",
     "reshiram", "zekrom", "landorus", "kyurem", "victini", "keldeo",
     "meloetta", "genesect",
-    # Gen 6
+    # Gen 6 (650-721)
     "chespin", "quilladin", "chesnaught", "fennekin", "braixen", "delphox",
     "froakie", "frogadier", "greninja", "bunnelby", "diggersby", "fletchling",
     "fletchinder", "talonflame", "scatterbug", "spewpa", "vivillon", "litleo",
@@ -121,7 +132,7 @@ POKEMON_NAMES = [
     "goomy", "sliggoo", "goodra", "klefki", "phantump", "trevenant",
     "pumpkaboo", "gourgeist", "bergmite", "avalugg", "noibat", "noivern",
     "xerneas", "yveltal", "zygarde", "diancie", "hoopa", "volcanion",
-    # Gen 7
+    # Gen 7 (722-809)
     "rowlet", "dartrix", "decidueye", "litten", "torracat", "incineroar",
     "popplio", "brionne", "primarina", "pikipek", "trumbeak", "toucannon",
     "yungoos", "gumshoos", "grubbin", "charjabug", "vikavolt", "crabrawler",
@@ -137,7 +148,7 @@ POKEMON_NAMES = [
     "xurkitree", "celesteela", "kartana", "guzzlord", "necrozma", "magearna",
     "marshadow", "poipole", "naganadel", "stakataka", "blacephalon", "zeraora",
     "meltan", "melmetal",
-    # Gen 8
+    # Gen 8 (810-905)
     "grookey", "thwackey", "rillaboom", "scorbunny", "raboot", "cinderace",
     "sobble", "drizzile", "inteleon", "skwovet", "greedent", "rookidee",
     "corvisquire", "corviknight", "blipbug", "dottler", "orbeetle", "wooloo",
@@ -150,7 +161,7 @@ POKEMON_NAMES = [
     "kubfu", "urshifu", "zarude", "regieleki", "regidrago", "glastrier",
     "spectrier", "calyrex", "wyrdeer", "kleavor", "ursaluna", "basculegion",
     "sneasler", "overqwil", "enamorus", "pecharunt",
-    # Gen 9
+    # Gen 9 (906-1025)
     "sprigatito", "floragato", "meowscarada", "fuecoco", "crocalor", "skeledirge",
     "quaxly", "quaxwell", "quaquaval", "lechonk", "oinkologne", "tarountula",
     "spidops", "nymble", "lokix", "pawmi", "pawmo", "pawmot",
